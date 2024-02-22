@@ -24,11 +24,11 @@ public static class TrafficHQEditorGizmo
         {
             case TrafficHeadquarter.ArrowDraw.FixedCount:
                 return headquarter.arrowCount;
-                break;
+    
             case TrafficHeadquarter.ArrowDraw.ByLength:
                 int count = (int)(Vector3.Distance(pointA, pointB) / headquarter.arrowDistance);
                 return Mathf.Max(1, count);
-                break;
+               
             case TrafficHeadquarter.ArrowDraw.Off:
                 return 0;
             default:

@@ -5,7 +5,7 @@ using UnityEditor;
 
 public static class TrafficHQInspectorEditor 
 {
-    public static void Drawinspector(TrafficHeadquarter trafficheadquarter, 
+    public static void DrawInspector(TrafficHeadquarter trafficheadquarter, 
         SerializedObject serializedObject, out bool restructureSystem)
     {
         //기즈모 세팅.
