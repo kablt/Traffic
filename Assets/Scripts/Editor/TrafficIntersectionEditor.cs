@@ -1,18 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class TrafficIntersectionEditor : MonoBehaviour
+
+[CustomEditor(typeof(TrafficIntersection))]
+public class TrafficIntersectionEditor : Editor
 {
-    // Start is called before the first frame update
-    void Start()
+    private TrafficIntersection intersection;
+
+    private void OnEnable()
     {
-        
+        intersection = target as TrafficIntersection;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void OnInspectorGUI()
     {
-        
+        intersection.IntersectionType = (IntersectionType)EditorGUILayout.EnumPopup("교차로 타입", intersection.IntersectionType);
+        EditorGUI.BeginDisabledGroup(intersection.IntersectionType != IntersectionType.STOP);
+        {
+            InspectorHelper.Header("우선 멈춤 구간");
+            InspectorHelper.PropertyField("우선 구간", "prioritySegments", serializedObject);
+            serializedObject.ApplyModifiedProperties();
+        }
+        EditorGUI.EndDisabledGroup();
+
+        EditorGUI.BeginDisabledGroup(intersection.IntersectionType != IntersectionType.TRAFFIC_LIGHT);
+        {
+            InspectorHelper.Header("신호 교차로.");
+            InspectorHelper.FloatField("신호 시간 (초)", ref intersection.lightDuration);
+            InspectorHelper.FloatField("주황불 시간(초)", ref intersection.orangeLightDuration);
+            InspectorHelper.PropertyField("첫번쨰 빨간 불 그룹1.", "LightGroup1", serializedObject);
+            InspectorHelper.PropertyField("두번쨰 빨간 불 그룹2.", "LightGroup2", serializedObject);
+            serializedObject.ApplyModifiedProperties();
+        }
+        EditorGUI.EndDisabledGroup();
     }
+
 }
