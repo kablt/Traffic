@@ -101,6 +101,19 @@ public static class TrafficHQEditorGizmo
                     }
                 }
             }
+            //세그먼트를 연결하는 선 그리기.
+            foreach(TrafficSegment nextSegment in segment.nextSegments)
+            {
+                Vector3 p1 = segment.Waypoints.Last().GetVisualPos();
+                Vector3 p2 = nextSegment.Waypoints.First().GetVisualPos();
+                //노란색 선으로 그려줍니다.
+                Gizmos.color = new Color(1f, 1f, 0f);
+                Gizmos.DrawLine(p1, p2);
+                if(headquarter.arrowDrawType != TrafficHeadquarter.ArrowDraw.Off)
+                {
+                    DrawArrow((p1 + p2) / 2f, p1 - p2, headquarter.arrowSizeIntersection);
+                }
+            }
         }
 
 
