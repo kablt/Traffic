@@ -10,9 +10,9 @@ public class WheelDriveControl : MonoBehaviour
 {
     public enum DriveType
     {
-        RearWheelDrive, //ÈÄ·û±¸µ¿.
-        FrontWheelDrive, //Àü·û±¸µ¿.
-        AllWheelDrive, //4·û±¸µ¿.
+        RearWheelDrive, //í›„ë¥œêµ¬ë™.
+        FrontWheelDrive, //ì „ë¥œêµ¬ë™.
+        AllWheelDrive, //4ë¥œêµ¬ë™.
     }
 
     public enum SpeedUnitType
@@ -20,30 +20,30 @@ public class WheelDriveControl : MonoBehaviour
         KMH,
         MPH,
     }
-    [Tooltip("Â÷·®¿¡ Àû¿ëµÇ´Â ´Ù¿îÆ÷½º.")]
+    [Tooltip("ì°¨ëŸ‰ì— ì ìš©ë˜ëŠ” ë‹¤ìš´í¬ìŠ¤.")]
     public float downForce = 100f;
-    [Tooltip("¹ÙÄûÀÇ ÃÖ´ë Á¶Çâ °¢µµ.")]
+    [Tooltip("ë°”í€´ì˜ ìµœëŒ€ ì¡°í–¥ ê°ë„.")]
     public float maxAngle = 60f;
-    [Tooltip("Á¶Çâ °¢µµ°¢¿¡ µµ´ŞÇÏ´Â ¼Óµµ(¼±Çüº¸°£)")]
+    [Tooltip("ì¡°í–¥ ê°ë„ê°ì— ë„ë‹¬í•˜ëŠ” ì†ë„(ì„ í˜•ë³´ê°„)")]
     public float steeringLerp = 5f;
-    [Tooltip("Â÷·®ÀÌ ¹æÇâÀ» ¹Ù²Ù·Á°í ÇÒ ¶§ÀÇ ÃÖ´ë ¼Óµµ.")]
+    [Tooltip("ì°¨ëŸ‰ì´ ë°©í–¥ì„ ë°”ê¾¸ë ¤ê³  í•  ë•Œì˜ ìµœëŒ€ ì†ë„.")]
     public float steeringSpeedMax = 8f;
-    [Tooltip("±¸µ¿¹ÙÄû¿¡ Àû¿ëµÇ´Â ÃÖ´ë ÅäÅ©(Èû).")]
+    [Tooltip("êµ¬ë™ë°”í€´ì— ì ìš©ë˜ëŠ” ìµœëŒ€ í† í¬(í˜).")]
     public float maxTorque = 100f;
-    [Tooltip("±¸µ¿¹ÙÄû¿¡ Àû¿ëµÇ´Â ÃÖ´ë ºê·¹ÀÌÅ© ÅäÅ©.")]
+    [Tooltip("êµ¬ë™ë°”í€´ì— ì ìš©ë˜ëŠ” ìµœëŒ€ ë¸Œë ˆì´í¬ í† í¬.")]
     public float breakTorque = 100000f;
-    [Tooltip("¼Óµµ ´ÜÀ§.")]
+    [Tooltip("ì†ë„ ë‹¨ìœ„.")]
     public SpeedUnitType unityType = SpeedUnitType.KMH;
-    [Tooltip("ÃÖ¼Ò ¼Óµµ - ÁÖÇà ½Ã (Á¤Áö/ ºê·¹ÀÌÅ© Á¦¿Ü) ´ÜÀ§´Â À§¿¡¼­ ¼±ÅÃÇÑ ¼Óµµ ´ÜÀ§,¹İµå½Ã 0º¸´Ù Ä¿¾ßÇÕ´Ï´Ù.")]
+    [Tooltip("ìµœì†Œ ì†ë„ - ì£¼í–‰ ì‹œ (ì •ì§€/ ë¸Œë ˆì´í¬ ì œì™¸) ë‹¨ìœ„ëŠ” ìœ„ì—ì„œ ì„ íƒí•œ ì†ë„ ë‹¨ìœ„,ë°˜ë“œì‹œ 0ë³´ë‹¤ ì»¤ì•¼í•©ë‹ˆë‹¤.")]
     public float minSpeed = 2f;
-    [Tooltip("À§¿¡¼­ ¼±ÅÃÇÑ ´ÜÀ§ÀÇ ÃÖ´ë ¼Óµµ.")]
+    [Tooltip("ìœ„ì—ì„œ ì„ íƒí•œ ë‹¨ìœ„ì˜ ìµœëŒ€ ì†ë„.")]
     public float maxSpeed = 10f;
-    [Tooltip("¹ÙÄû´Â ÈÙÄİ¶óÀÌ´õÀÇ ÀÚ½ÄÀ¸·Î µû·Î ºÙ¿©Áİ´Ï´Ù. ¸µÅ© ÇÊ¿ä.")]
+    [Tooltip("ë°”í€´ëŠ” íœ ì½œë¼ì´ë”ì˜ ìì‹ìœ¼ë¡œ ë”°ë¡œ ë¶™ì—¬ì¤ë‹ˆë‹¤. ë§í¬ í•„ìš”.")]
     public GameObject leftWheelShape;
     public GameObject rightWheelShape;
-    [Tooltip("¹ÙÄû¿¡ ¾Ö´Ï¸ŞÀÌ¼Ç È¿°ú¸¦ Àû¿ëÇÒÁöÀÇ ¿©ºÎ.")]
+    [Tooltip("ë°”í€´ì— ì• ë‹ˆë©”ì´ì…˜ íš¨ê³¼ë¥¼ ì ìš©í• ì§€ì˜ ì—¬ë¶€.")]
     public bool animateWheels = true;
-    [Tooltip("Â÷·®ÀÇ ±¸µ¿ À¯Çü : ÈÄ·û, Àü·û, 4·û.")]
+    [Tooltip("ì°¨ëŸ‰ì˜ êµ¬ë™ ìœ í˜• : í›„ë¥œ, ì „ë¥œ, 4ë¥œ.")]
     public DriveType driveType = DriveType.RearWheelDrive;
 
     private WheelCollider[] wheels;
@@ -58,32 +58,32 @@ public class WheelDriveControl : MonoBehaviour
         for (int i = 0; i < wheels.Length; i++)
         {
             var wheel = wheels[i];
-            //ÇÊ¿äÇÒ ¶§¸¸ ¹ÙÄû ¸ğ¾çÀ» ¸¸µéÀÚ.
+            //í•„ìš”í•  ë•Œë§Œ ë°”í€´ ëª¨ì–‘ì„ ë§Œë“¤ì.
             if (leftWheelShape != null && wheel.transform.localPosition.x < 0)
             {
                 var wheelshape = Instantiate(leftWheelShape);
                 wheelshape.transform.parent = wheel.transform;
-                wheelshape.transform.localPosition = Vector3.zero;//ÀÌ°Å.
+                wheelshape.transform.localPosition = Vector3.zero;//ì´ê±°.
             }
             else if (rightWheelShape != null && wheel.transform.localPosition.x > 0)
             {
                 var wheelshape = Instantiate(rightWheelShape);
                 wheelshape.transform.parent = wheel.transform;
-                wheelshape.transform.localPosition = Vector3.zero;//ÀÌ°Å.
+                wheelshape.transform.localPosition = Vector3.zero;//ì´ê±°.
             }
-            wheel.ConfigureVehicleSubsteps(10, 1, 1);
+            wheel.ConfigureVehicleSubsteps(10,1,1);
         }
-
+        
     }
     private void Awake()
     {
-        Init();
+        Init();    
     }
     /*private void OnEnable()
     {
         Init();
     }*/
-    //ÇöÀç ¼Óµµ ´ÜÀ§ÀÇ ¸ÂÃß¾î ÇöÀç ¼Óµµ¸¦ ¾ò¾î¿É´Ï´Ù.
+    //í˜„ì¬ ì†ë„ ë‹¨ìœ„ì˜ ë§ì¶”ì–´ í˜„ì¬ ì†ë„ë¥¼ ì–»ì–´ì˜µë‹ˆë‹¤.
     public float GetSpeedMS(float speed)
     {
         if (speed == 0f)
@@ -97,7 +97,7 @@ public class WheelDriveControl : MonoBehaviour
     {
         return unityType == SpeedUnitType.KMH ? speed * 3.6f : speed * 2.237f;
     }
-    //ÀÌµ¿ÇÏ¸é¼­ ¹ÙÄûÀÇ Á¶Çâ ±â´Éµµ ÀÖ°í ¸®Áöµå¹Ùµğ¿¡ ÈûÀ» °¡ÇØÁÖ´Â ±â´ÉÀ¸·Î ÀÌµ¿ÇÑ´Ù.
+    //ì´ë™í•˜ë©´ì„œ ë°”í€´ì˜ ì¡°í–¥ ê¸°ëŠ¥ë„ ìˆê³  ë¦¬ì§€ë“œë°”ë””ì— í˜ì„ ê°€í•´ì£¼ëŠ” ê¸°ëŠ¥ìœ¼ë¡œ ì´ë™í•œë‹¤.
     public void Move(float _acceleration, float _steering, float _brake)
     {
         float nSteering = Mathf.Lerp(currentSteering, _steering, Time.deltaTime * steeringLerp);
@@ -114,12 +114,12 @@ public class WheelDriveControl : MonoBehaviour
 
         foreach (var wheel in wheels)
         {
-            //¾Õ¹ÙÄû Á¶Çâ
+            //ì•ë°”í€´ ì¡°í–¥
             if (wheel.transform.localPosition.z > 0)
             {
                 wheel.steerAngle = angle;
             }
-            //µŞ¹ÙÄû Á¶Çâ.
+            //ë’·ë°”í€´ ì¡°í–¥.
             if (wheel.transform.localPosition.z < 0)
             {
                 wheel.brakeTorque = handBrake;
@@ -136,7 +136,7 @@ public class WheelDriveControl : MonoBehaviour
             {
                 wheel.motorTorque = torque;
             }
-            //ÈÙ Æ®·£½ºÆû Á¤º¸¸¦ À§¿¡ ¼¼ÆÃÇÑ °ª¿¡ µû¶ó º¯°æÇÔÀ¸·Î½á ¾Ö´Ï¸ŞÀÌ¼Ç È¿°ú. 
+            //íœ  íŠ¸ëœìŠ¤í¼ ì •ë³´ë¥¼ ìœ„ì— ì„¸íŒ…í•œ ê°’ì— ë”°ë¼ ë³€ê²½í•¨ìœ¼ë¡œì¨ ì• ë‹ˆë©”ì´ì…˜ íš¨ê³¼. 
             if (animateWheels)
             {
                 Quaternion rotation;
@@ -151,13 +151,13 @@ public class WheelDriveControl : MonoBehaviour
 
         if (rb != null)
         {
-            //°¡¼ÓÀ» Áİ´Ï´Ù.
+            //ê°€ì†ì„ ì¤ë‹ˆë‹¤.
             float speedUnit = GetSpeedUnit(rb.velocity.magnitude);
             if (speedUnit > maxSpeed)
             {
                 rb.velocity = GetSpeedMS(maxSpeed) * rb.velocity.normalized;
             }
-            //downforce¸¦ Áİ´Ï´Ù.
+            //downforceë¥¼ ì¤ë‹ˆë‹¤.
             rb.AddForce(-transform.up * downForce * rb.velocity.magnitude);
         }
     }

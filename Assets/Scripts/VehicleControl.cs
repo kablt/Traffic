@@ -12,13 +12,18 @@ public class VehicleControl : MonoBehaviour
 {
     private WheelDriveControl wheelDriveControl;
     private float initMaxSpeed = 0f;
-    //ÀÚµ¿Â÷°¡ ÀÌµ¿ÇÒ Å¸°Ù µ¥ÀÌÅÍ ±¸Á¶Ã¼.
+    //ìë™ì°¨ê°€ ì´ë™í•  íƒ€ê²Ÿ ë°ì´í„° êµ¬ì¡°ì²´.
     public struct Target
     {
         public int segment;
         public int waypoint;
+        public override string ToString()
+        {
+            string ret = $"Target : {segment} / {waypoint}";
+            return ret;
+        }
     }
-    //ÀÚµ¿Â÷ÀÇ »óÅÂ.
+    //ìë™ì°¨ì˜ ìƒíƒœ.
     public enum Status
     {
         GO,
@@ -26,33 +31,31 @@ public class VehicleControl : MonoBehaviour
         SLOW_DOWN,
     }
 
-    [Header("±³Åë °üÁ¦ ½Ã½ºÅÛ.")]
-    [Tooltip("ÇöÀç È°¼ºÈ­ µÇ ±³Åë ½Ã½ºÅÛ.")]
+    [Header("êµí†µ ê´€ì œ ì‹œìŠ¤í…œ.")] [Tooltip("í˜„ì¬ í™œì„±í™” ë˜ êµí†µ ì‹œìŠ¤í…œ.")]
     public TrafficHeadquarter trafficHeadquarter;
-    [Tooltip("Â÷·®ÀÌ ¸ñÇ¥¿¡ µµ´ŞÇÑ ½Ã±â¸¦ È®ÀÎÇÕ´Ï´Ù. ´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®¸¦ ´õ ÀÏÂï ¿¹»óÇÏ´Âµ¥ »ç¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.(ÀÌ ¼ıÀÚ°¡ ³ôÀ» ¼ö·Ï" +
-             "´õ »¡¸® ¿¹»óµË´Ï´Ù.")]
+    [Tooltip("ì°¨ëŸ‰ì´ ëª©í‘œì— ë„ë‹¬í•œ ì‹œê¸°ë¥¼ í™•ì¸í•©ë‹ˆë‹¤. ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ë” ì¼ì° ì˜ˆìƒí•˜ëŠ”ë° ì‚¬ìš©í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.(ì´ ìˆ«ìê°€ ë†’ì„ ìˆ˜ë¡" +
+             "ë” ë¹¨ë¦¬ ì˜ˆìƒë©ë‹ˆë‹¤.")]
     public float waypointThresh = 2.5f;
 
-    [Header("°¨Áö ·¹ÀÌ´õ")]
-    [Tooltip("·¹ÀÌ¸¦ ½ò ¾ŞÄ¿.")]
+    [Header("ê°ì§€ ë ˆì´ë”")] [Tooltip("ë ˆì´ë¥¼ ì  ì•µì»¤.")]
     public Transform raycastAnchor;
-    [Tooltip("·¹ÀÌÀÇ ±æÀÌ")]
+    [Tooltip("ë ˆì´ì˜ ê¸¸ì´")]
     public float raycastLength = 3f;
-    [Tooltip("·¹ÀÌ »çÀÌÀÇ °£°İ.")]
+    [Tooltip("ë ˆì´ ì‚¬ì´ì˜ ê°„ê²©.")]
     public float raycasySpacing = 3f;
-    [Tooltip("»ı¼ºµÉ ·¹ÀÌÀÇ ¼ö")]
+    [Tooltip("ìƒì„±ë  ë ˆì´ì˜ ìˆ˜")]
     public int raycastNumber = 8;
-    [Tooltip("°¨ÁöµÈ Â÷·®ÀÌ ÀÌ °Å¸® ¹Ì¸¸ÀÌ¸é Â÷°¡ Á¤ÁöÇÕ´Ï´Ù.")]
+    [Tooltip("ê°ì§€ëœ ì°¨ëŸ‰ì´ ì´ ê±°ë¦¬ ë¯¸ë§Œì´ë©´ ì°¨ê°€ ì •ì§€í•©ë‹ˆë‹¤.")]
     public float emergencyBrakeThresh = 1.5f;
-    [Tooltip("°¨ÁöµÈ Â÷·®ÀÌ ÀÌ °Å¸®º¸´Ù ³·°Å³ª °Å¸®º¸´Ù ³ôÀ» °æ¿ì ÀÚµ¿Â÷ÀÇ ¼Óµµ°¡ ´À·ÁÁı´Ï´Ù.")]
+    [Tooltip("ê°ì§€ëœ ì°¨ëŸ‰ì´ ì´ ê±°ë¦¬ë³´ë‹¤ ë‚®ê±°ë‚˜ ê±°ë¦¬ë³´ë‹¤ ë†’ì„ ê²½ìš° ìë™ì°¨ì˜ ì†ë„ê°€ ëŠë ¤ì§‘ë‹ˆë‹¤.")]
     public float slowDownThresh = 5f;
 
     public Status vehicleStatus = Status.GO;
     private int pastTargetSegment = -1;
     private Target currentTarget;
     private Target nextTarget;
-
-
+    
+    
     void Start()
     {
         wheelDriveControl = GetComponent<WheelDriveControl>();
@@ -62,13 +65,13 @@ public class VehicleControl : MonoBehaviour
         {
             raycastAnchor = transform.Find("Raycast Anchor");
         }
-        //½ÃÀÛÇÏ¸é ³»°¡ ¾îµğ¿¡ ÀÖ´ÂÁö, ¾îµğ·Î °¡¾ßÇÏ´Â Áö ÇÑ¹ø Ã£¾Æº¾´Ï´Ù.
+        //ì‹œì‘í•˜ë©´ ë‚´ê°€ ì–´ë””ì— ìˆëŠ”ì§€, ì–´ë””ë¡œ ê°€ì•¼í•˜ëŠ” ì§€ í•œë²ˆ ì°¾ì•„ë´…ë‹ˆë‹¤.
         SetWaypointVehicleIsOn();
     }
-
+    
     void Update()
     {
-        //Å×½ºÆ® ÄÚµå. ÁÖ¼®Ã³¸® ÇÕ´Ï´Ù.
+        //í…ŒìŠ¤íŠ¸ ì½”ë“œ. ì£¼ì„ì²˜ë¦¬ í•©ë‹ˆë‹¤.
         //float accelation = 1f;
         //float brake = 0f;
         //float steering = Input.GetAxisRaw("Horizontal");// 0f;
@@ -79,15 +82,15 @@ public class VehicleControl : MonoBehaviour
         {
             return;
         }
-        //ÀÌµ¿ÇØ¾ßÇÒ Å¸°Ù ¿şÀÌÆ÷ÀÎÆ®¿Í °¡±î¿îÁö, °¡±õ´Ù¸é ´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ® ¼±Á¤±îÁö.
+        //ì´ë™í•´ì•¼í•  íƒ€ê²Ÿ ì›¨ì´í¬ì¸íŠ¸ì™€ ê°€ê¹Œìš´ì§€, ê°€ê¹ë‹¤ë©´ ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ ì„ ì •ê¹Œì§€.
         WayPointChecker();
-        //ÀÚÀ² ÁÖÇà.
+        //ììœ¨ ì£¼í–‰.
         MoveVehicle();
     }
 
     int GetNextSegmentID()
     {
-        //hq°¡ µé°í ÀÖ´Â ±¸°£ Áß¿¡ ÇöÀç Â÷·®ÀÌ ¼ÓÇØÀÖ´Â ¼¼±×¸ÕÆ®°¡ °®°í ÀÖ´Â ´ÙÀ½ ±¸°£µéÀ» ¾ò¾î¿É´Ï´Ù.
+        //hqê°€ ë“¤ê³  ìˆëŠ” êµ¬ê°„ ì¤‘ì— í˜„ì¬ ì°¨ëŸ‰ì´ ì†í•´ìˆëŠ” ì„¸ê·¸ë¨¼íŠ¸ê°€ ê°–ê³  ìˆëŠ” ë‹¤ìŒ êµ¬ê°„ë“¤ì„ ì–»ì–´ì˜µë‹ˆë‹¤.
         List<TrafficSegment> nextSegments = trafficHeadquarter.segments[currentTarget.segment].nextSegments;
         if (nextSegments.Count == 0)
         {
@@ -97,21 +100,21 @@ public class VehicleControl : MonoBehaviour
         int randomCount = Random.Range(0, nextSegments.Count - 1);
         return nextSegments[randomCount].ID;
     }
-    //¾ÛÀÌ ½ÇÇàµÇ¾úÀ»¶§ ÇöÀç Â÷·®ÀÌ ¾î´À ±¸°£¿¡ ¾î´À ¿şÀÌÆ÷ÀÎÆ®¸¦ ÇâÇØ °¡¾ßÇÏ´ÂÁö ½º½º·Î ÆÇ´Ü.
+    //ì•±ì´ ì‹¤í–‰ë˜ì—ˆì„ë•Œ í˜„ì¬ ì°¨ëŸ‰ì´ ì–´ëŠ êµ¬ê°„ì— ì–´ëŠ ì›¨ì´í¬ì¸íŠ¸ë¥¼ í–¥í•´ ê°€ì•¼í•˜ëŠ”ì§€ ìŠ¤ìŠ¤ë¡œ íŒë‹¨.
     void SetWaypointVehicleIsOn()
     {
         foreach (var segment in trafficHeadquarter.segments)
         {
-            //ÇöÀçÂ÷°¡ ÀÌ ±¸°£¾È¿¡ ÀÖ´ÂÁö È®ÀÎ.
+            //í˜„ì¬ì°¨ê°€ ì´ êµ¬ê°„ì•ˆì— ìˆëŠ”ì§€ í™•ì¸.
             if (segment.IsOnSegment(transform.position))
             {
                 currentTarget.segment = segment.ID;
-                //±¸°£ ³»¿¡¼­ ½ÃÀÛÇÒ °¡Àå °¡±î¿î ¿şÀÌÆ÷ÀÎÆ® Ã£±â.
+                //êµ¬ê°„ ë‚´ì—ì„œ ì‹œì‘í•  ê°€ì¥ ê°€ê¹Œìš´ ì›¨ì´í¬ì¸íŠ¸ ì°¾ê¸°.
                 float minDist = float.MaxValue;
                 List<TrafficWaypoint> waypoints = trafficHeadquarter.segments[currentTarget.segment].Waypoints;
                 for (int j = 0; j < waypoints.Count; j++)
                 {
-                    float distance = Vector3.Distance(transform.position,
+                    float distance = Vector3.Distance(transform.position, 
                         waypoints[j].transform.position);
 
                     Vector3 lSpace = transform.InverseTransformPoint(waypoints[j].transform.position);
@@ -125,39 +128,39 @@ public class VehicleControl : MonoBehaviour
                 break;
             }
         }
-        //´ÙÀ½  target Ã£±â.
+        //ë‹¤ìŒ  target ì°¾ê¸°.
         nextTarget.waypoint = currentTarget.waypoint + 1;
         nextTarget.segment = currentTarget.segment;
-        //À§¿¡ ÁöÁ¤ÇÑ ´ÙÀ½ Å¸°ÙÀÇ waypoint °¡ ¹üÀ§¸¦ ¹ş¾î³µ´Ù¸é ´Ù½Ã Ã³À½ 0¹øÂ° ¿şÀÌÆ÷ÀÎÆ®.´ÙÀ½ ¼¼±×¸ÕÆ® ¾ÆÀÌµğ¸¦ ±¸ÇÕ´Ï´Ù.
+        //ìœ„ì— ì§€ì •í•œ ë‹¤ìŒ íƒ€ê²Ÿì˜ waypoint ê°€ ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ë‹¤ë©´ ë‹¤ì‹œ ì²˜ìŒ 0ë²ˆì§¸ ì›¨ì´í¬ì¸íŠ¸.ë‹¤ìŒ ì„¸ê·¸ë¨¼íŠ¸ ì•„ì´ë””ë¥¼ êµ¬í•©ë‹ˆë‹¤.
         if (nextTarget.waypoint >= trafficHeadquarter.segments[currentTarget.segment].Waypoints.Count)
         {
             nextTarget.waypoint = 0;
             nextTarget.segment = GetNextSegmentID();
         }
     }
-    //´ÙÀ½ ÀÌµ¿ÇÒ ¿şÀÌÆ÷ÀÎÆ®¸¦ Ã¼Å©ÇÏ¿© Å¸°ÙÀ» ¼±Á¤.
+    //ë‹¤ìŒ ì´ë™í•  ì›¨ì´í¬ì¸íŠ¸ë¥¼ ì²´í¬í•˜ì—¬ íƒ€ê²Ÿì„ ì„ ì •.
     void WayPointChecker()
     {
         GameObject waypoint = trafficHeadquarter.segments[currentTarget.segment].
             Waypoints[currentTarget.waypoint].gameObject;
-        //Â÷·®À» ±âÁØÀ¸·Î ÇÑ ´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®¿ÍÀÇ À§Ä¡¸¦ Ã£±â À§ÇØ ¿şÀÌÆ÷ÀÎÆ®¿ÍÀÇ °Å¸® °è»ê.
+        //ì°¨ëŸ‰ì„ ê¸°ì¤€ìœ¼ë¡œ í•œ ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ì™€ì˜ ìœ„ì¹˜ë¥¼ ì°¾ê¸° ìœ„í•´ ì›¨ì´í¬ì¸íŠ¸ì™€ì˜ ê±°ë¦¬ ê³„ì‚°.
         Vector3 wpDist = transform.InverseTransformPoint(
             new Vector3(waypoint.transform.position.x,
                 transform.position.y,
                 waypoint.transform.position.z));
-        //¸¸¾à ÇöÀç Å¸°ÙÀ¸·Î ÇÏ°í ÀÖ´Â ¿şÀÌÆ÷ÀÎÆ®¿Í ÀÏÁ¤ °Å¸® ÀÌÇÏ·Î °¡±õ´Ù¸é.
+        //ë§Œì•½ í˜„ì¬ íƒ€ê²Ÿìœ¼ë¡œ í•˜ê³  ìˆëŠ” ì›¨ì´í¬ì¸íŠ¸ì™€ ì¼ì • ê±°ë¦¬ ì´í•˜ë¡œ ê°€ê¹ë‹¤ë©´.
         if (wpDist.magnitude < waypointThresh)
         {
             currentTarget.waypoint++;
-            //ÇöÀç ±¸°£ÀÌ °®°í ÀÖ´Â ¿şÀÌÆ÷ÀÎÆ®¸¦ ´Ù µ¹¾Òµû¸é ´ÙÀ½ ±¸°£ÀÇ ¿şÀÌÆ÷ÀÎÆ®·Î Å¸°ÙÀ» º¯°æ.
+            //í˜„ì¬ êµ¬ê°„ì´ ê°–ê³  ìˆëŠ” ì›¨ì´í¬ì¸íŠ¸ë¥¼ ë‹¤ ëŒì•˜ë”°ë©´ ë‹¤ìŒ êµ¬ê°„ì˜ ì›¨ì´í¬ì¸íŠ¸ë¡œ íƒ€ê²Ÿì„ ë³€ê²½.
             if (currentTarget.waypoint >= trafficHeadquarter.segments[currentTarget.segment].Waypoints.Count)
             {
                 pastTargetSegment = currentTarget.segment;
                 currentTarget.segment = nextTarget.segment;
                 currentTarget.waypoint = 0;
             }
-            //´ÙÀ½ Å¸°ÙÀÇ ¿şÀÌÆ÷ÀÎÆ®µµ Ã£±â.
-            nextTarget.waypoint = currentTarget.waypoint+ 1;
+            //ë‹¤ìŒ íƒ€ê²Ÿì˜ ì›¨ì´í¬ì¸íŠ¸ë„ ì°¾ê¸°.
+            nextTarget.waypoint = currentTarget.waypoint + 1; //<--ìš”ê±° ê³ ì³ì£¼ì„¸ìš”. ë²„ê·¸.
             if (nextTarget.waypoint >= trafficHeadquarter.segments[currentTarget.segment].Waypoints.Count)
             {
                 nextTarget.waypoint = 0;
@@ -166,20 +169,20 @@ public class VehicleControl : MonoBehaviour
         }
 
     }
-    //·¹ÀÌ Ä³½ºÆÃ ÇÔ¼ö. -> Ãæµ¹ ·¹ÀÌ¾î¿Í ÀÚµ¿Â÷ ·¹ÀÌ¾î¸¸ ·¹ÀÌ Ä³½ºÆÃÇÕ´Ï´Ù.
+    //ë ˆì´ ìºìŠ¤íŒ… í•¨ìˆ˜. -> ì¶©ëŒ ë ˆì´ì–´ì™€ ìë™ì°¨ ë ˆì´ì–´ë§Œ ë ˆì´ ìºìŠ¤íŒ…í•©ë‹ˆë‹¤.
     void CastRay(Vector3 anchor, float angle, Vector3 dir, float length, out GameObject outObstacle,
         out float outHitDistance)
     {
         outObstacle = null;
         outHitDistance = -1;
-
-        Debug.DrawRay(anchor, Quaternion.Euler(0f, angle, 0f) * dir * length,
+        
+        Debug.DrawRay(anchor, Quaternion.Euler(0f, angle, 0f)* dir * length,
             Color.red);
-        //ÀÏ´Ü ÀÚµ¿Â÷ ·¹ÀÌ¾î¸¸.
+        //ì¼ë‹¨ ìë™ì°¨ ë ˆì´ì–´ë§Œ.
         int layer = 1 << LayerMask.NameToLayer(TrafficHeadquarter.VehicleTagLayer);
         int finalMask = layer;
-
-        //Ãß°¡ Ãæµ¹Ã¼ÀÇ ·¹ÀÌ¾î°¡ ÀÖÀ¸¸é Ãß°¡.
+        
+        //ì¶”ê°€ ì¶©ëŒì²´ì˜ ë ˆì´ì–´ê°€ ìˆìœ¼ë©´ ì¶”ê°€.
         foreach (var layerName in trafficHeadquarter.collisionLayers)
         {
             int id = 1 << LayerMask.NameToLayer(layerName);
@@ -187,7 +190,7 @@ public class VehicleControl : MonoBehaviour
         }
 
         RaycastHit hit;
-        if (Physics.Raycast(anchor, Quaternion.Euler(0f, angle, 0f) * dir,
+        if (Physics.Raycast(anchor, Quaternion.Euler(0f, angle, 0f) * dir, 
             out hit, length, finalMask))
         {
             outObstacle = hit.collider.gameObject;
@@ -196,7 +199,7 @@ public class VehicleControl : MonoBehaviour
         }
 
     }
-    //·¹ÀÌÄ³½ºÆÃÀ» ÇØ¼­ Ãæµ¹Ã¼¸¦ ¾ò¾î¿À°í °Å¸®µµ ¾ò¾î¿À´Â ÇÔ¼ö.
+    //ë ˆì´ìºìŠ¤íŒ…ì„ í•´ì„œ ì¶©ëŒì²´ë¥¼ ì–»ì–´ì˜¤ê³  ê±°ë¦¬ë„ ì–»ì–´ì˜¤ëŠ” í•¨ìˆ˜.
     GameObject GetDetectObstacles(out float hitDist)
     {
         GameObject obstacleObject = null;
@@ -224,7 +227,7 @@ public class VehicleControl : MonoBehaviour
         hitDist = hitDistance;
         return obstacleObject;
     }
-    //ÀÌ Â÷·®ÀÇ ±¸°£(segment)À» ¾ò¾î¿À´Â ÇÔ¼ö.
+    //ì´ ì°¨ëŸ‰ì˜ êµ¬ê°„(segment)ì„ ì–»ì–´ì˜¤ëŠ” í•¨ìˆ˜.
     public int GetSegmentVehicleIsIn()
     {
         int vehicleSegment = currentTarget.segment;
@@ -240,22 +243,26 @@ public class VehicleControl : MonoBehaviour
 
         return vehicleSegment;
     }
-    //°¡±ŞÀû ÀÚÀ²ÁÖÇàÀ» ÇÏ°í ½Í½À´Ï´Ù.
+    //ê°€ê¸‰ì  ììœ¨ì£¼í–‰ì„ í•˜ê³  ì‹¶ìŠµë‹ˆë‹¤.
     void MoveVehicle()
     {
-        //±âº»ÀûÀ¸·Î Ç® ¿¢¼¿, ³ë ºê·¹ÀÌÅ©, ³ë ÇÚµé¸µ.
+        //ê¸°ë³¸ì ìœ¼ë¡œ í’€ ì—‘ì…€, ë…¸ ë¸Œë ˆì´í¬, ë…¸ í•¸ë“¤ë§.
         float acc = 1f;
         float brake = 0f;
         float steering = 0f;
         wheelDriveControl.maxSpeed = initMaxSpeed;
-
+        if (currentTarget.segment >= trafficHeadquarter.segments.Count ||
+            currentTarget.waypoint >= trafficHeadquarter.segments[currentTarget.segment].Waypoints.Count)
+        {
+            Debug.LogError(currentTarget.ToString());
+        }
         Transform targetTransform = trafficHeadquarter.segments[currentTarget.segment].Waypoints[currentTarget.waypoint].transform;
         Transform nextTargetTransform = trafficHeadquarter.segments[nextTarget.segment].Waypoints[nextTarget.waypoint].transform;
         Vector3 nextVector3 = nextTargetTransform.position - targetTransform.position;
-        //È¸ÀüÀ» ÇØ¾ßÇÏ´Â Áö °è»ê.
+        //íšŒì „ì„ í•´ì•¼í•˜ëŠ” ì§€ ê³„ì‚°.
         float nextSteering = Mathf.Clamp(transform.InverseTransformDirection(nextVector3.normalized).x,
             -1, 1);
-        //¸¸¾à Â÷°¡ ¼­¾ß ÇÑ´Ù¸é.
+        //ë§Œì•½ ì°¨ê°€ ì„œì•¼ í•œë‹¤ë©´.
         if (vehicleStatus == Status.STOP)
         {
             acc = 0f;
@@ -265,85 +272,85 @@ public class VehicleControl : MonoBehaviour
         else
         {
             // - ----- ----------- ---  -----
-            //¼Óµµ¸¦ ÁÙ¿©¾ß ÇÏ´Â °æ¿ì.
+            //ì†ë„ë¥¼ ì¤„ì—¬ì•¼ í•˜ëŠ” ê²½ìš°.
             if (vehicleStatus == Status.SLOW_DOWN)
             {
                 acc = 0.3f;
                 brake = 0f;
             }
-            //È¸ÀüÀ» ÇØ¾ß ÇÑ´Ù¸é ¼Óµµµµ Á¶Àı.
+            //íšŒì „ì„ í•´ì•¼ í•œë‹¤ë©´ ì†ë„ë„ ì¡°ì ˆ.
             if (nextSteering > 0.3f || nextSteering < -0.3f)
             {
                 wheelDriveControl.maxSpeed = Mathf.Min(wheelDriveControl.maxSpeed,
                     wheelDriveControl.steeringSpeedMax);
             }
-            //2. ·¹ÀÌÄ³½ºÆ®·Î °¨ÁöµÇ Àå¾Ö¹°ÀÌ ÀÖ´Â Áö È®ÀÎ.
+            //2. ë ˆì´ìºìŠ¤íŠ¸ë¡œ ê°ì§€ë˜ ì¥ì• ë¬¼ì´ ìˆëŠ” ì§€ í™•ì¸.
             float hitDist;
             GameObject obstacle = GetDetectObstacles(out hitDist);
-            // ¹«¾ğ°¡ Ãæµ¹ÀÌ µÇ¾ú´Ù¸é.
+            // ë¬´ì–¸ê°€ ì¶©ëŒì´ ë˜ì—ˆë‹¤ë©´.
             if (obstacle != null)
             {
                 WheelDriveControl obstacleVehicle = null;
                 obstacleVehicle = obstacle.GetComponent<WheelDriveControl>();
-                //ÀÚµ¿Â÷¶ó¸é.
+                //ìë™ì°¨ë¼ë©´.
                 if (obstacleVehicle != null)
                 {
-                    //¾ÕÂ÷ ÀÎÁö ºÎÅÍ È®ÀÎ.
+                    //ì•ì°¨ ì¸ì§€ ë¶€í„° í™•ì¸.
                     float dotFront = Vector3.Dot(transform.forward,
                         obstacleVehicle.transform.forward);
-                    //°¨ÁöµÈ ¾Õ Â÷·®ÀÇ ¼Óµµ°¡ ³»Â÷ÀÇ ¼Óµµº¸´Ù ³·À¸¸é ¼Óµµ¸¦ ÁÙÀÎ´Ù.
+                    //ê°ì§€ëœ ì• ì°¨ëŸ‰ì˜ ì†ë„ê°€ ë‚´ì°¨ì˜ ì†ë„ë³´ë‹¤ ë‚®ìœ¼ë©´ ì†ë„ë¥¼ ì¤„ì¸ë‹¤.
                     if (dotFront > 0.8f && obstacleVehicle.maxSpeed < wheelDriveControl.maxSpeed)
                     {
-                        //¼Óµµ¸¦ ÁÙÀÏ¶§ ¾Æ¹«¸® ÀÛ¾Æµµ 0.1º¸´Ù´Â Å©°Ô Á¶Àı.
+                        //ì†ë„ë¥¼ ì¤„ì¼ë•Œ ì•„ë¬´ë¦¬ ì‘ì•„ë„ 0.1ë³´ë‹¤ëŠ” í¬ê²Œ ì¡°ì ˆ.
                         float speed = Mathf.Max(
                             wheelDriveControl.GetSpeedMS(obstacleVehicle.maxSpeed) - 0.5f, 0.1f);
                         wheelDriveControl.maxSpeed = wheelDriveControl.GetSpeedUnit(speed);
                     }
-                    //µÎ Â÷·®ÀÌ ³Ê¹« °¡±î¿ì¸é¼­ °°Àº ¹æÇâÀ» ÇâÇÏ°í ÀÖÀ¸¸é ÀÏ´Ü ¸ØÃá´Ù.
+                    //ë‘ ì°¨ëŸ‰ì´ ë„ˆë¬´ ê°€ê¹Œìš°ë©´ì„œ ê°™ì€ ë°©í–¥ì„ í–¥í•˜ê³  ìˆìœ¼ë©´ ì¼ë‹¨ ë©ˆì¶˜ë‹¤.
                     if (dotFront > 0.8f && hitDist < emergencyBrakeThresh)
                     {
                         acc = 0f;
                         brake = 1;
-                        //¾Æ¹«¸® ¼Óµµ¸¦ ÁÙ¿©µµ ÃÖ¼Ò¼Óµµ±îÁö¸¸ ÁÙÀÔ´Ï´Ù.
+                        //ì•„ë¬´ë¦¬ ì†ë„ë¥¼ ì¤„ì—¬ë„ ìµœì†Œì†ë„ê¹Œì§€ë§Œ ì¤„ì…ë‹ˆë‹¤.
                         wheelDriveControl.maxSpeed = Mathf.Max(wheelDriveControl.maxSpeed / 2f,
                             wheelDriveControl.minSpeed);
                     }
-                    //µÎ Â÷·®ÀÌ ³Ê¹« °¡±î¿ì¸é¼­ °°Àº ¹æÇâÀ» ÇâÇÏ°í ÀÖÁö ¾ÊÀº °æ¿ì , Àü¸é¿¡¼­ ´Ş·Á¿À´Â Â÷¿Í ºÎµúÈ÷°Ô »ı±ä°æ¿ì.
+                    //ë‘ ì°¨ëŸ‰ì´ ë„ˆë¬´ ê°€ê¹Œìš°ë©´ì„œ ê°™ì€ ë°©í–¥ì„ í–¥í•˜ê³  ìˆì§€ ì•Šì€ ê²½ìš° , ì „ë©´ì—ì„œ ë‹¬ë ¤ì˜¤ëŠ” ì°¨ì™€ ë¶€ë”ªíˆê²Œ ìƒê¸´ê²½ìš°.
                     else if (dotFront <= 0.8f && hitDist < emergencyBrakeThresh)
                     {
                         acc = -0.3f;
                         brake = 0f;
                         wheelDriveControl.maxSpeed = Mathf.Max(wheelDriveControl.maxSpeed / 2f,
                             wheelDriveControl.minSpeed);
-                        //°¡±îÀÌ¿¡ ÀÖ´Â Â÷·®ÀÌ ¿À¸¥ÂÊ¿¡ ÀÖÀ»¼ö ÀÖ°í ¿ŞÂÊ¿¡ ÀÖÀ» ¼ö ÀÖ±â ¶§¹®¿¡ ±×¿¡µû¶ó È¸Àüµµ ÇÏ°Ú½À´Ï´Ù.
+                        //ê°€ê¹Œì´ì— ìˆëŠ” ì°¨ëŸ‰ì´ ì˜¤ë¥¸ìª½ì— ìˆì„ìˆ˜ ìˆê³  ì™¼ìª½ì— ìˆì„ ìˆ˜ ìˆê¸° ë•Œë¬¸ì— ê·¸ì—ë”°ë¼ íšŒì „ë„ í•˜ê² ìŠµë‹ˆë‹¤.
                         float dotRight = Vector3.Dot(transform.forward, obstacleVehicle.transform.forward);
-                        //¿À¸¥ÂÊ.
+                        //ì˜¤ë¥¸ìª½.
                         if (dotRight > 0.1f)
                         {
                             steering = -0.3f;
                         }
-                        //¿ŞÂÊ.
+                        //ì™¼ìª½.
                         else if (dotRight < -0.1f)
                         {
                             steering = 0.3f;
                         }
-                        //°¡¿îµ¥.
+                        //ê°€ìš´ë°.
                         else
                         {
                             steering = -0.7f;
                         }
                     }
-                    //µÎ Â÷·®ÀÌ °¡±î¿öÁö¸é ¼Óµµ¸¦ ÁÙÀÌÀÚ.
+                    //ë‘ ì°¨ëŸ‰ì´ ê°€ê¹Œì›Œì§€ë©´ ì†ë„ë¥¼ ì¤„ì´ì.
                     else if (hitDist < slowDownThresh)
                     {
                         acc = 0.5f;
                         brake = 0f;
                     }
                 }
-                //Àå¾Ö¹°....
+                //ì¥ì• ë¬¼....
                 else
                 {
-                    //³Ê¹« °¡±î¿ì¸é ±ä±Ş Á¦µ¿.
+                    //ë„ˆë¬´ ê°€ê¹Œìš°ë©´ ê¸´ê¸‰ ì œë™.
                     if (hitDist < emergencyBrakeThresh)
                     {
                         acc = 0f;
@@ -351,7 +358,7 @@ public class VehicleControl : MonoBehaviour
                         wheelDriveControl.maxSpeed = Mathf.Max(wheelDriveControl.maxSpeed / 2f,
                             wheelDriveControl.minSpeed);
                     }
-                    //±×·¸Áö ¾ÊÀ¸¸é ÀÏÁ¤ °Å¸® ÀÌÇÏ·Î °¡±î¿öÁö¸é ÃµÃµÈ÷ ÀÌµ¿.
+                    //ê·¸ë ‡ì§€ ì•Šìœ¼ë©´ ì¼ì • ê±°ë¦¬ ì´í•˜ë¡œ ê°€ê¹Œì›Œì§€ë©´ ì²œì²œíˆ ì´ë™.
                     else if (hitDist < slowDownThresh)
                     {
                         acc = 0.5f;
@@ -359,8 +366,8 @@ public class VehicleControl : MonoBehaviour
                     }
                 }
             }
-
-            //°æ·Î¸¦ µû¸£µµ·Ï ¹æÇâÀ» Á¶Á¤ÇØ¾ßÇÏ´Â Áö È®ÀÎ.
+            
+            //ê²½ë¡œë¥¼ ë”°ë¥´ë„ë¡ ë°©í–¥ì„ ì¡°ì •í•´ì•¼í•˜ëŠ” ì§€ í™•ì¸.
             if (acc > 0f)
             {
                 Vector3 nextVector = trafficHeadquarter.segments[currentTarget.segment].Waypoints
@@ -369,19 +376,19 @@ public class VehicleControl : MonoBehaviour
                     -1, 1);
             }
         }
-        //Â÷·® ÀÌµ¿.
+        //ì°¨ëŸ‰ ì´ë™.
         wheelDriveControl.Move(acc, steering, brake);
     }
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

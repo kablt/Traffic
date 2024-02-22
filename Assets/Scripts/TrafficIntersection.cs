@@ -1,74 +1,76 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 using UnityEngine;
 
 public enum IntersectionType
 {
-    NONE=0,
-    STOP, //¿ì¼± ¸ØÃã ±¸°£
-    TRAFFIC_LIGHT, // ½ÅÈ£µî ±³Â÷·Î ±¸°£
-    TRAFFIC_SLOW, // °¨¼Ó ±¸°£
-    EMERTGENCY //±ä±Ş »óÈ²
+    NONE = 0,
+    STOP,//ìš°ì„  ë©ˆì¶¤ êµ¬ê°„.
+    TRAFFIC_LIGHT, //ì‹ í˜¸ë“± êµì°¨ë¡œ êµ¬ê°„.
+    TRAFFIC_SLOW,//ê°ì† êµ¬ê°„.
+    EMERGENCY, //ê¸´ê¸‰ ìƒí™©.
 }
+
 public class TrafficIntersection : MonoBehaviour
 {
-    public IntersectionType intersectionType = IntersectionType.NONE;
-    public int ID = 0;
-    //¿ì¼± ¸ØÃã ±¸°£µé
+    public IntersectionType IntersectionType = IntersectionType.NONE;
+    public int ID = -1;
+    //ìš°ì„  ë©ˆì¶¤ êµ¬ê°„ë“¤.
     public List<TrafficSegment> prioritySegments = new List<TrafficSegment>();
-    //½ÅÈ£µî ±¸°£¿¡ ÇÊ¿äÇÑ ¼Ó¼ºµé
+    //ì‹ í˜¸ë“± êµ¬ê°„ì— í•„ìš”í•œ ì†ì„±ë“¤.
     public float lightDuration = 8f;
     private float lastChangeLightTime = 0f;
     private Coroutine lightRoutine;
-    public float lightRepeatrate = 8f;
+    public float lightRepeatRate = 8f;
     public float orangeLightDuration = 2f;
-    //»¡°£ ºÒ ±¸°£
+    //ë¹¨ê°„ ë¶ˆ êµ¬ê°„.
     public List<TrafficSegment> lightGroup1 = new List<TrafficSegment>();
     public List<TrafficSegment> lightGroup2 = new List<TrafficSegment>();
-
+    //êµì°¨ë¡œ ì˜ì—­ì— ìˆëŠ” ìë™ì°¨ë“¤ì„ ê°€ì§€ê³  ìˆë‹¤.
     private List<GameObject> vehiclesQueue = new List<GameObject>();
-    private List<GameObject> vehiclesIntersection = new List<GameObject>();
+    private List<GameObject> vehiclesInIntersection = new List<GameObject>();
     private TrafficHeadquarter trafficHeadquarter;
-    //ÇöÀç ¹ß°£ºÒ ±×·ì.
-    public int currentRedLightgroup = 1;
+    //í˜„ì¬ ë¹¨ê°„ë¶ˆ ê·¸ë£¹.
+    public int currentRedLightGroup = 1;
 
-    //»¡°£ ºÒ ±¸°£ ÀÔ´Ï±î?
+    //ë¹¨ê°„ ë¶ˆ êµ¬ê°„ì…ë‹ˆê¹Œ?
     bool IsRedLightSegment(int vehicleSegment)
     {
-        if(currentRedLightgroup == 1)
+        if (currentRedLightGroup == 1)
         {
-            foreach(var segment in lightGroup1)
+            foreach (var segment in lightGroup1)
             {
-                if(segment.ID == vehicleSegment)
+                if (segment.ID == vehicleSegment)
                 {
                     return true;
                 }
             }
         }
-        else if(currentRedLightgroup ==2)
+        else if (currentRedLightGroup == 2)
         {
-            foreach(var segment in lightGroup2)
+            foreach (var segment in lightGroup2)
             {
-                if(segment.ID == vehicleSegment)
+                if (segment.ID == vehicleSegment)
                 {
                     return true;
                 }
             }
         }
+
         return false;
     }
-
+    //êµì°¨ë¡œì— ì§„ì…í•œ ìë™ì°¨ë“¤ì„ ì´ë™ì‹œí‚´.
     void MoveVehicleQueue()
     {
-        //Å¥¿¡ ÀÖ´Â »¡°£ºÒ ½ÅÈ£ ±¸°£ÀÌ ¾Æ´Ñ ÀÚµ¿Â÷µéÀ» ÀÌµ¿½ÃÅ²´Ù.
+        //íì— ìˆëŠ” ë¹¨ê°„ë¶ˆ ì‹ í˜¸ êµ¬ê°„ì´ ì•„ë‹Œ ìë™ì°¨ë“¤ì„ ì´ë™ì‹œí‚¨ë‹¤.
         List<GameObject> newVehicleQueue = new List<GameObject>(vehiclesQueue);
-        foreach (var vehicle in newVehicleQueue)
+        foreach (var vehicle in vehiclesQueue)
         {
             VehicleControl vehicleControl = vehicle.GetComponent<VehicleControl>();
             int vehicleSegment = vehicleControl.GetSegmentVehicleIsIn();
-            //»¡°£ ½ÅÈ£¸¦ ¹ŞÁö ¾Ê´Â Â÷·®ÀÌ¶ó¸é.
-            if(IsRedLightSegment(vehicleSegment)==false)
+            //ë¹¨ê°„ ì‹ í˜¸ë¥¼ ë°›ì§€ ì•Šì€ ì°¨ëŸ‰ì´ë¼ë©´.
+            if (IsRedLightSegment(vehicleSegment) == false)
             {
                 vehicleControl.vehicleStatus = VehicleControl.Status.GO;
                 newVehicleQueue.Remove(vehicle);
@@ -77,135 +79,139 @@ public class TrafficIntersection : MonoBehaviour
 
         vehiclesQueue = newVehicleQueue;
     }
-  //½ÅÈ£ º¯°æÇØÁÖ°í ,Â÷·®
+    //ì‹ í˜¸ ë³€ê²½í•´ì£¼ê³ , ì°¨ëŸ‰ ì´ë™ê¹Œì§€ í•´ì¤ë‹ˆë‹¤.
     void SwitchLights()
     {
-        if(currentRedLightgroup ==1)
+        if (currentRedLightGroup == 1)
         {
-            currentRedLightgroup = 2;
-        }
-        else if(currentRedLightgroup ==2)
+            currentRedLightGroup = 2;
+        }else if (currentRedLightGroup == 2)
         {
-            currentRedLightgroup = 1;
+            currentRedLightGroup = 1;
         }
         else
         {
-            currentRedLightgroup = 1;
+            currentRedLightGroup = 1;
         }
-        //´Ù¸¥ Â÷·®ÀÇ ¿òÁ÷ÀÌ°Ô ÇÏ±â Àü¿¡ ½ÅÈ£ ÀüÈ¯ ÈÄ ¸î ÃÊµ¿¾È ±â´Ù¸®°Ô ÇØÁÖÀÚ(ÁÖÈ²ºÒ)
+        //ë‹¤ë¥¸ ì°¨ëŸ‰ì„ ì›€ì§ì´ê²Œ í•˜ê¸° ì „ì— ì‹ í˜¸ ì „í™˜ í›„ ëª‡ ì´ˆë™ì•ˆ ê¸°ë‹¤ë¦¬ê²Œ í•´ì£¼ì(ì£¼í™©ë¶ˆ).
         Invoke("MoveVehicleQueue", orangeLightDuration);
     }
 
     private void Start()
     {
         vehiclesQueue = new List<GameObject>();
-        vehiclesIntersection = new List<GameObject>();
+        vehiclesInIntersection = new List<GameObject>();
         lastChangeLightTime = Time.time;
     }
-
-    //ÄÚ·çÆ¾À¸·Î ½ÅÈ£ º¯°æ È£Ãâ, ÀÏÁ¤ °£°İ(LightRepeatRate, lightDuration)
+    //ì½”ë£¨í‹´ìœ¼ë¡œ ì‹ í˜¸ ë³€ê²½ í˜¸ì¶œ. ì¼ì • ê°„ê²©(lightRepeatRate, lightDuration)
     private IEnumerator OnTrafficLight()
     {
         SwitchLights();
-        yield return new WaitForSeconds(lightRepeatrate);
+        yield return new WaitForSeconds(lightRepeatRate);
     }
 
     private void Update()
     {
-        switch (intersectionType)
+        switch (IntersectionType)
         {
+            //ì‹ í˜¸ë“± êµì°¨ë¡œë¼ë©´ ì¼ì • ì‹œê°„ ë³„ë¡œ ì‹ í˜¸ êµì²´ë¥¼ í•´ì¤ë‹ˆë‹¤.
             case IntersectionType.TRAFFIC_LIGHT:
-                if(Time.time > lastChangeLightTime + lightDuration)
+                if (Time.time > lastChangeLightTime + lightDuration)
                 {
                     lastChangeLightTime = Time.time;
                     lightRoutine = StartCoroutine("OnTrafficLight");
                 }
                 break;
-            case IntersectionType.EMERTGENCY:
-                if(lightRoutine != null)
+            //ê¸´ê¸‰ ìƒí™©ì´ë¼ë©´ ì‹ í˜¸ êµì²´ ë©ˆì¶”ê³  0ë²ˆ ê·¸ë£¹ìœ¼ë¡œ ì„¸íŒ…í•©ë‹ˆë‹¤.
+            case IntersectionType.EMERGENCY:
+                if (lightRoutine != null)
                 {
                     StopCoroutine(lightRoutine);
-                    currentRedLightgroup = 0;
+                    currentRedLightGroup = 0;
                 }
                 break;
             case IntersectionType.STOP:
                 break;
+            default:
+                break;
         }
     }
-
+    //ì´ë¯¸ êµì°¨ë¡œ ì•ˆì— ìˆëŠ” ì°¨ëŸ‰ì¸ì§€?.
     bool IsAlreadyInIntersection(GameObject target)
     {
-        foreach(var vehicle in vehiclesIntersection)
+        foreach (var vehicle in vehiclesInIntersection)
         {
-            if(vehicle.GetInstanceID() == target.GetInstanceID())
+            if (vehicle.GetInstanceID() == target.GetInstanceID())
             {
                 return true;
             }
         }
 
-        foreach(var vehicle in vehiclesQueue)
+        foreach (var vehicle in vehiclesQueue)
         {
-            if(vehicle.GetInstanceID() == target.GetInstanceID())
+            if (vehicle.GetInstanceID() == target.GetInstanceID())
             {
                 return true;
             }
         }
-
 
         return false;
     }
-
-    //¿ì¼± ±¸°£?
+    
+    //ìš°ì„  êµ¬ê°„?
     bool IsPrioritySegment(int vehicleSegment)
     {
-        foreach(var segment in prioritySegments)
+        foreach (var segment in prioritySegments)
         {
-            if(vehicleSegment == segment.ID)
+            if (vehicleSegment == segment.ID)
             {
                 return true;
             }
         }
+
         return false;
     }
-    //¿ì¼± ¸ØÃá ±¸°£ Æ®¸®°Å.
+    //ìš°ì„  ë©ˆì¶¤ êµ¬ê°„ íŠ¸ë¦¬ê±°.
     void TriggerStop(GameObject vehicle)
     {
         VehicleControl vehicleControl = vehicle.GetComponent<VehicleControl>();
-        //¿şÀÌÆ÷ÀÎÆ® ÀÓ°è°ª¿¡ µû¶ó ÀÚµ¿Â÷´Â ´ë»ó ±¸°£ ¶Ç´Â ¹Ù·Î Á÷Àü ±¸°£¿¡ ÀÖÀ» ¼ö ÀÖ½À´Ï´Ù
+        //ì›¨ì´í¬ì¸íŠ¸ ì„ê³„ê°’ì— ë”°ë¼ ìë™ì°¨ëŠ” ëŒ€ìƒ êµ¬ê°„ ë˜ëŠ” ë°”ë¡œ ì§ì „ êµ¬ê°„ì— ìˆì„ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
         int vehicleSegment = vehicleControl.GetSegmentVehicleIsIn();
 
-        if(IsPrioritySegment(vehicleSegment)==false)
+        if (IsPrioritySegment(vehicleSegment) == false)
         {
-            if(vehiclesQueue.Count > 0 || vehiclesIntersection.Count >0)
+            //êµì°¨ë¡œì— ì°¨ê°€ í•œëŒ€ë¼ë„ ìˆë‹¤ë©´. íì— ë„£ê³  ëŒ€ê¸°.
+            if (vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0)
             {
                 vehicleControl.vehicleStatus = VehicleControl.Status.STOP;
+                vehiclesQueue.Add(vehicle);
             }
-            //±³Â÷·Î¿¡ Â÷°¡ ¾ø´Ù¸é
+            //êµì°¨ë¡œì— ì°¨ê°€ ì—†ë‹¤ë©´.
             else
             {
-                vehiclesIntersection.Add(vehicle);
+                vehiclesInIntersection.Add(vehicle);
                 vehicleControl.vehicleStatus = VehicleControl.Status.SLOW_DOWN;
             }
         }
         else
         {
             vehicleControl.vehicleStatus = VehicleControl.Status.SLOW_DOWN;
-            vehiclesIntersection.Add(vehicle);
+            vehiclesInIntersection.Add(vehicle);
         }
     }
-
+    //ìš°ì„  ë©ˆì¶¤ì—ì„œ ë¹ ì ¸ ë‚˜ê°€ê¸°.
     void ExitStop(GameObject vehicle)
     {
         vehicle.GetComponent<VehicleControl>().vehicleStatus = VehicleControl.Status.GO;
-        vehiclesIntersection.Remove(vehicle);
+        vehiclesInIntersection.Remove(vehicle);
         vehiclesQueue.Remove(vehicle);
 
-        if(vehiclesQueue.Count > 0 && vehiclesIntersection.Count ==0)
+        if (vehiclesQueue.Count > 0 && vehiclesInIntersection.Count == 0)
         {
             vehiclesQueue[0].GetComponent<VehicleControl>().vehicleStatus = VehicleControl.Status.GO;
         }
     }
-    //½ÅÈ£ ±³Â÷·Î Æ®¸®°Å, Â÷·®À» ¸ØÃß°Å³ª ÀÌµ¿½ÃÅ°°Å³ª.
+    //ì‹ í˜¸ êµì°¨ë¡œ íŠ¸ë¦¬ê±°. ì°¨ëŸ‰ì„ ë©ˆì¶”ê±°ë‚˜ ì´ë™ì‹œí‚¤ê±°ë‚˜.
     void TriggerLight(GameObject vehicle)
     {
         VehicleControl vehicleControl = vehicle.GetComponent<VehicleControl>();
@@ -221,43 +227,41 @@ public class TrafficIntersection : MonoBehaviour
             vehicleControl.vehicleStatus = VehicleControl.Status.GO;
         }
     }
-
+    //ì‹ í˜¸ë“± êµì°¨ë¡œ êµ¬ê°„ì„ ë¹ ì ¸ë‚˜ê°”ë‹¤ë©´ ê·¸ëŒ€ë¡œ ì´ë™.
     void ExitLight(GameObject vehicle)
     {
         vehicle.GetComponent<VehicleControl>().vehicleStatus = VehicleControl.Status.GO;
     }
-    //±ä±Ş »óÈ² ¹ß»ı Æ®¸®¤Ã
+    //ê¸´ê¸‰ ìƒí™© ë°œìƒ íŠ¸ë¦¬ê±°.
     void TriggerEmergency(GameObject vehicle)
     {
         VehicleControl vehicleControl = vehicle.GetComponent<VehicleControl>();
-        int vehicleSegment = vehicleControl.GetSegmentVehicleIsIn();
+        int vehicleSement = vehicleControl.GetSegmentVehicleIsIn();
 
         vehicleControl.vehicleStatus = VehicleControl.Status.STOP;
         vehiclesQueue.Add(vehicle);
     }
-
-    //ºüÁ®³ª°¬´Ù¸é, ±ä±Ş»óÈ²ÀÌ ÇìÁ¦µÇ¾úÀ» °æ¿ì
+    //ë¹ ì ¸ë‚˜ê°”ë”°ë©´. ê¸´ê¸‰ìƒí™©ì´ í•´ì œë˜ì—ˆì„ ê²½ìš°.
     private void ExitEmergency(GameObject vehicle)
     {
         vehicle.GetComponent<VehicleControl>().vehicleStatus = VehicleControl.Status.GO;
     }
-
-    //Æ®¸®°Å ¹ß»ı½Ã Ã³¸®.
+    //íŠ¸ë¦¬ê±° ë°œìƒì‹œ ì²˜ë¦¬.
     private void OnTriggerEnter(Collider other)
     {
-        //Â÷·®ÀÌ ÀÌ¹Ì ¸ñ·Ï¿¡ ÀÖ´ÂÁö È®ÀÎÇÏ°í ,±×·¸´Ù¸é Ã³¸® ¾ÈÇÔ
-        //¹æ±İ ½ÃÀÛÇÑ ¾ÛÀÌ¶ó¸é Ã³¸® ¾ÈÇÔ(¾Æ¿¹ ½ÃÀÛ½Ã ±³Â÷·Î¿¡ Â÷·®ÀÌ ÀÖ´Â °æ¿ì)
-       if(IsAlreadyInIntersection(other.gameObject) || Time.timeSinceLevelLoad < 0.5f)
+        //ì°¨ëŸ‰ì´ ì´ë¯¸ ëª©ë¡ì— ìˆëŠ”ì§€ í™•ì¸í•˜ê³ , ê·¸ë ‡ë‹¤ë©´ ì²˜ë¦¬ ì•ˆí•¨.
+        //ë°©ê¸ˆ ì‹œì‘í•œ ì•±ì´ë¼ë©´ ì²˜ë¦¬ ì•ˆí•¨(ì•„ì˜ˆ ì‹œì‘ì‹œ êµì°¨ë¡œì— ì°¨ëŸ‰ì´ ìˆëŠ” ê²½ìš°).
+        if (IsAlreadyInIntersection(other.gameObject) || Time.timeSinceLevelLoad < 0.5f)
         {
             return;
         }
-       //Â÷·®ÀÌ ¾Æ´Ï¸é ¹«½Ã
-       if(other.tag.Equals(TrafficHeadquarter.VehicleTagLayer) ==false)
+        //ì°¨ëŸ‰ì´ ì•„ë‹ˆë©´ ë¬´ì‹œ.
+        if (other.tag.Equals(TrafficHeadquarter.VehicleTagLayer) == false)
         {
             return;
         }
-
-       switch (intersectionType)
+        //ì´ êµì°¨ë¡œì˜ íƒ€ì…ì— ë”°ë¼ ì²˜ë¦¬ë¥¼ ë¶„ë¦¬í•©ë‹ˆë‹¤.
+        switch (IntersectionType)
         {
             case IntersectionType.STOP:
                 TriggerStop(other.gameObject);
@@ -265,20 +269,20 @@ public class TrafficIntersection : MonoBehaviour
             case IntersectionType.TRAFFIC_LIGHT:
                 TriggerLight(other.gameObject);
                 break;
-            case IntersectionType.EMERTGENCY:
+            case IntersectionType.EMERGENCY:
                 TriggerEmergency(other.gameObject);
                 break;
         }
     }
-
+    //íŠ¸ë¦¬ê±°ì—ì„œ ë¹ ì ¸ ë‚˜ê°”ì„ë•Œ.
     private void OnTriggerExit(Collider other)
     {
-        if(other.tag.Equals(TrafficHeadquarter.VehicleTagLayer) == false)
+        if (other.tag.Equals(TrafficHeadquarter.VehicleTagLayer) == false)
         {
             return;
         }
 
-        switch(intersectionType)
+        switch (IntersectionType)
         {
             case IntersectionType.STOP:
                 ExitStop(other.gameObject);
@@ -286,7 +290,7 @@ public class TrafficIntersection : MonoBehaviour
             case IntersectionType.TRAFFIC_LIGHT:
                 ExitLight(other.gameObject);
                 break;
-            case IntersectionType.EMERTGENCY:
+            case IntersectionType.EMERGENCY:
                 ExitEmergency(other.gameObject);
                 break;
         }

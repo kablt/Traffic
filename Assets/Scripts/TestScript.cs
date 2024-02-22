@@ -2,42 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using static UnityEngine.GraphicsBuffer;
-
-
 public class TestScript : MonoBehaviour
 {
-
     public TextMeshProUGUI textLabel;
-    //sphrer
-    public Transform target;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
+    //sphere
+    public Transform target; 
+    
     // Update is called once per frame
     void Update()
     {
-        //Å¸°Ù¾øÀÌ´Â µ¿ÀÛÇÏÁö ¾Ê½À´Ï´Ù
-        if(target == null)
+        // ã…Œã…ê²Ÿ ì—†ì´ëŠ” ë™ì‘í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
+        if (target == null)
         {
             return;
         }
         //cube transform
         Vector3 lhs = transform.forward;
-        //target À¸·Î ÇâÇÏ´Â ¹éÅÍ, Å©±â¸¦ ³ë¸»¶óÀÌÁîÇØ¼­ ¹æÇâ¸¸ ¾ò½À´Ï´Ù.
+        //target ìœ¼ë¡œ í–¥í•˜ëŠ” ë²¡í„°, í¬ê¸°ë¥¼ ë…¸ë©€ë¼ì´ì¦ˆí•´ì„œ ë°©í–¥ë§Œ ì–»ìŠµë‹ˆë‹¤.
         Vector3 rhs = (target.position - transform.position).normalized;
-        //³»ÀûÀ» ±¸ÇÕ´Ï´Ù .ÃÖ´ë1 ÃÖ¼Ò -1
+        //ë‚´ì ì„ êµ¬í•©ë‹ˆë‹¤. ìµœëŒ€ 1 , ìµœì†Œ -1.
         float dot = Mathf.Clamp(Vector3.Dot(lhs, rhs), -1, 1);
-        //Å¸ÄÏ Æ÷Áö¼ÇÀ¸·Î ºÎÅÍÀÇ ¿ª¹éÅÍ¸¦ ±¸ÇÕˆ•´Ù.
+        //íƒ€ê²Ÿ í¬ì§€ì…˜ìœ¼ë¡œ ë¶€í„°ì˜ ì—­ë²¡í„°ë¥¼ êµ¬í•©ë‹ˆë‹¤.
         Vector3 lineVector = transform.InverseTransformPoint(target.position);
-        //·¹ÀÌ¸¦ ±×·Áº¾´Ï´Ù. Å¸ÄÏÀ¸·Î ÇâÇÏ´Â ·¹ÀÌ, Å¥ºêÀÇ forward ¸¦ ³ªÅ¸³»´Â ·¹ÀÌ.
-        Debug.DrawRay(transform.position,lineVector, Color.red);
-        Debug.DrawRay(transform.position,transform.forward, Color.cyan);
-        //ÅØ½ºÆ®·Î ³»ÀûÀÇ °ªÀ» Ãâ·ÂÇÕ´Ï´Ù.
-        textLabel.text = dot.ToString("f1");
+        //ë ˆì´ë¥¼ ê·¸ë ¤ë´…ë‹ˆë‹¤. íƒ€ê²Ÿìœ¼ë¡œ í–¥í•˜ëŠ” ë ˆì´, íë¸Œì˜ forward ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ë ˆì´.
+        Debug.DrawRay(transform.position, lineVector, Color.red);
+        Debug.DrawRay(transform.position, transform.forward, Color.cyan);
+        //í…ìŠ¤íŠ¸ë¡œ ë‚´ì ì˜ ê°’ì„ ì¶œë ¥í•©ë‹ˆë‹¤.
+        textLabel.text = dot.ToString("F1");
     }
 }
-

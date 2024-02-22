@@ -5,25 +5,23 @@ using UnityEngine;
 public class TrafficWaypoint : MonoBehaviour
 {
     public TrafficSegment segment;
+
     public void RemoveCollider()
     {
-
-        if(GetComponent<SphereCollider>())
+        if (GetComponent<SphereCollider>())
         {
-
             Debug.Log("Remove Collider");
             DestroyImmediate(gameObject.GetComponent<SphereCollider>());
         }
-
     }
 
     public void Refresh(int newID, TrafficSegment newSegment)
     {
         segment = newSegment;
-        //Waypoint -1 , WayPoint-10
-        name = "Waypoint-"+ newID.ToString();
+        //WayPoint-1 , WayPoint-10
+        name = "WayPoint-" + newID.ToString();
         tag = "WayPoint";
-        gameObject.layer = LayerMask.NameToLayer("Deafault");
+        gameObject.layer = LayerMask.NameToLayer("Default");
         RemoveCollider();
     }
 

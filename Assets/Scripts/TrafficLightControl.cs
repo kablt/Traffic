@@ -1,33 +1,29 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Serialization;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class TrafficLightControl : MonoBehaviour
 {
-
-    public int LightGroupID;
+    public int lightGroupID;
     public TrafficIntersection intersection;
-    //¶óÀÌÆ®..
+    //ë¼ì´íŠ¸..
     private Light pointLight;
-    //±ä±Þ »óÈ²½Ã ±ôºýÀÓ Á¤µµ.
+    //ê¸´ê¸‰ ìƒí™©ì‹œ ê¹œë¹¡ìž„ ì •ë„.
     private float blink = 0f;
-    //±³Åë½ÅÈ£¿¡ µû¶ó »ö±ò º¯°æ.
+    //êµí†µ ì‹ í˜¸ì— ë”°ë¼ ìƒ‰ê¹” ë³€ê²½.
     void SetTrafficLightColor()
     {
-        if(intersection.currentRedLightgroup == LightGroupID)
+        if (intersection.currentRedLightGroup == lightGroupID)
         {
             pointLight.color = Color.red;
         }
-        //±ä±Þ»óÈ²ÀÏ‹š
-        else if (intersection.currentRedLightgroup == 0)
+        //ê¸´ê¸‰ìƒí™©ì¼ë•Œ.
+        else if (intersection.currentRedLightGroup == 0)
         {
             blink = Mathf.Clamp01(blink + Time.deltaTime * 2f);
             pointLight.color = new Color(blink, 0f, 0f);
-            if(blink >=1f)
+            if (blink >= 1f)
             {
                 blink = 0f;
             }
@@ -48,5 +44,4 @@ public class TrafficLightControl : MonoBehaviour
     {
         SetTrafficLightColor();
     }
-  
 }

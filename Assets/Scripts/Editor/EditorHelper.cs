@@ -2,43 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Unity.VisualScripting.YamlDotNet.Serialization.TypeResolvers;
 using System;
 
 public static class EditorHelper
 {
     public static void SetUndoGroup(string label)
     {
-        //ÀÌ µÚ·Î ³ª¿À´Â ¸ğµç º¯È­¸¦ ÇÏ³ªÀÇ ±×·ìÀ¸·Î ¹­´Â´Ù´Â ¶æ
-        //ctrl+zÇÒ °æ¿ì ±×·ì ´ÜÀ§·Î Ãë¼ÒµÊ
+        //ì´ ë’¤ë¡œ ë‚˜ì˜¤ëŠ” ëª¨ë“  ë³€í™”ë¥¼ í•˜ë‚˜ì˜ ê·¸ë£¹ìœ¼ë¡œ ë¬¶ëŠ”ë‹¤ëŠ” ëœ»ì…ë‹ˆë‹¤.
+        //ctrl+zë¥¼ í•˜ë©´ ê·¸ë£¹ë‹¨ìœ„ë¡œ ì·¨ì†Œë©ë‹ˆë‹¤.
         Undo.SetCurrentGroupName(label);
     }
 
     public static void BeginUndoGroup(string undoName, TrafficHeadquarter trafficHeadquarter)
     {
-        //undo±×·ì ¼¼ÆÃ
+        //undoê·¸ë£¹ ì„¸íŒ….
         Undo.SetCurrentGroupName(undoName);
-        //headquarter¿¡¼­ ¹ß»ıÇÏ´Â ¸ğµç º¯È­¸¦ µî·ÏÇÏ°Ô µÊ
+        //headquaterì—ì„œ ë°œìƒí•˜ëŠ” ëª¨ë“  ë³€í™”ë¥¼ ë“±ë¡í•˜ê²Œ ë©ë‹ˆë‹¤.
         Undo.RegisterFullObjectHierarchyUndo(trafficHeadquarter.gameObject, undoName);
     }
-
+    //ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„±í•´ì„œ íŠ¸ëœìŠ¤í¼ ë¦¬ì…‹í•´ì„œ ëŒë ¤ì¤ë‹ˆë‹¤.
     public static GameObject CreateGameObject(string name, Transform parent = null)
     {
-        GameObject newGameObject = new GameObject(name);
-        newGameObject.transform.position = Vector3.zero;
-        newGameObject.transform.localScale = Vector3.one;
-        newGameObject.transform.localRotation = Quaternion.identity;
-
-        Undo.RegisterFullObjectHierarchyUndo(newGameObject, "Spawn Create GameObject");
-        Undo.SetTransformParent(newGameObject.transform, parent, "Set Parent");
-        return newGameObject;
+        GameObject newGameObejct = new GameObject(name);
+        newGameObejct.transform.position = Vector3.zero;
+        newGameObejct.transform.localScale = Vector3.one;
+        newGameObejct.transform.localRotation = Quaternion.identity;
+        
+        Undo.RegisterFullObjectHierarchyUndo(newGameObejct, "Spawn Create GameObject");
+        Undo.SetTransformParent(newGameObejct.transform, parent, "Set Parent");
+        return newGameObejct;
     }
-    //ÄÄÆ÷³ÍÆ® ºÙÀÌ´Â ÀÛ¾÷µµ undo°¡ °¡´ÉÇÏµµ·Ï ¼¼ÆÃ
+    //ì»´í¬ë„ŒíŠ¸ ë¶™ì´ëŠ” ì‘ì—…ë„ undoê°€ ê°€ëŠ¥í•˜ë„ë¡ ì„¸íŒ….
     public static T AddComponent<T>(GameObject target) where T : Component
     {
         return Undo.AddComponent<T>(target);
     }
-    //·¹ÀÌ¿Í ±¸ÀÇ Ãæµ¹ ÆÇº°½Ä. °ªÀÌ true¶ó¸é ±¸ ¹İ°æ¿¡ ·¹ÀÌ°¡ hitµÇ¾ú´Ù´Â ¸»
+    //ë ˆì´ì™€ êµ¬ì˜ ì¶©ëŒ íŒë³„ì‹ì…ë‹ˆë‹¤. ê°’ì´  trueë¼ë©´ êµ¬ ë°˜ê²½ì— ë ˆì´ê°€ hit ë˜ì—ˆë‹¤ëŠ” ëœ».
     public static bool SphereHit(Vector3 center, float radius, Ray ray)
     {
         Vector3 originToCenter = ray.origin - center;
@@ -46,24 +45,25 @@ public static class EditorHelper
         float b = 2f * Vector3.Dot(originToCenter, ray.direction);
         float c = Vector3.Dot(originToCenter, originToCenter) - (radius * radius);
         float discriminant = b * b - 4f * a * c;
-        //±¸¿¡ Ãæµ¹ÇÏÁö ¾ÊÀ½
-        if (discriminant < 0)
+        //êµ¬ì— ì¶©ëŒí•˜ì§€ ì•Šì•˜ì–´ìš”.
+        if (discriminant < 0f)
         {
             return false;
         }
-        //Ãæµ¹ÇÔ
+        //í•œì ì´ìƒ ì¶©ëŒë˜ì—ˆì–´ìš”.
         float sqrt = Mathf.Sqrt(discriminant);
         return -b - sqrt > 0f || -b + sqrt > 0f;
     }
-    //¾ø´Â °ÔÀÓ ¿ÀºêÁ§Æ® ·¹ÀÌ¾î¸¦ »ı¼ºÇÏ´Â ÇÔ¼ö
+    //ì—†ëŠ” ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë ˆì´ì–´ ìƒì„±í•˜ëŠ” í•¨ìˆ˜.
     public static void CreateLayer(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new ArgumentException("name", "»õ·Î¿î ·¹ÀÌ¾î¸¦ Ãß°¡ÇÏ·Á¸é ÀÌ¸§À» ÀÔ·ÂÇÏ¼¼¿ä.");
+            throw new ArgumentException("name", "ìƒˆë¡œìš´ ë ˆì´ì–´ë¥¼ ì¶”ê°€í• ë ¤ë©´ ì´ë¦„ì„ ê¼­ ì…ë ¥í•´ì£¼ì„¸ìš”.");
         }
 
-        var tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        var tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath
+            ("ProjectSettings/TagManager.asset")[0]);
         var layerProps = tagManager.FindProperty("layers");
         var propCount = layerProps.arraySize;
 
@@ -76,37 +76,37 @@ public static class EditorHelper
             {
                 return;
             }
-            //builtin, ÀÌ¹Ì ´Ù¸¥ ·¹ÀÌ¾î°¡ ÀÚ¸®¸¦ Â÷ÁöÇÏ°í ÀÖ´Ù¸é
+            //builtin, ì´ë¯¸ ë‹¤ë¥¸ ë ˆì´ì–´ê°€ ìë¦¬ë¥¼ ì°¨ì§€í•˜ê³  ìˆë‹¤ë©´.
             if (i < 8 || stringValue != string.Empty)
             {
                 continue;
             }
+
             if (firstEmptyProp == null)
             {
                 firstEmptyProp = layerProp;
                 break;
             }
-
+            
         }
+
         if (firstEmptyProp == null)
         {
-            Debug.Log($"·¹ÀÌ¾î°¡ ÃÖ´ë °¹¼ö¿¡ µµ´ŞÇÏ¿´½À´Ï´Ù ±×·¡¼­ {name}¸¦ »ı¼ºÇÏÁö ¸øÇÏ¿´½À´Ï´Ù");
+            Debug.LogError($"ë ˆì´ì–´ê°€ ìµœëŒ€ ê°¯ìˆ˜ì— ë„ë‹¬í•˜ì˜€ìŠµë‹ˆë‹¤. ê·¸ë˜ì„œ {name}ë¥¼ ìƒì„±í•˜ì§€ ëª»í•˜ì˜€ìŠµë‹ˆë‹¤.");
             return;
         }
 
         firstEmptyProp.stringValue = name;
         tagManager.ApplyModifiedProperties();
-
-
+        
     }
-
+    
     /// <summary>
-    /// //GameObject¿¡ ·¹ÀÌ¾î¸¦ ¼¼ÆÃÇÔ. ¿øÇÏ¸é ÀÚ½Äµéµµ ÀüºÎ´Ù ¼¼ÆÃÇÕ´Ï´Ù
+    /// GameObjectì— ë ˆì´ì–´ë¥¼ ì„¸íŒ…í•©ë‹ˆë‹¤. ì›í•˜ë©´ ìì‹ë“¤ë„ ì „ë¶€ë‹¤ ì„¸íŒ…í•©ë‹ˆë‹¤.
     /// </summary>
     /// <param name="gameObject"></param>
     /// <param name="layer"></param>
-    /// <param name="includeChildren"></param>
-    /// 
+    /// <param name="ìì‹ë„ êµì²´í•©ë‹ˆê¹Œ?"></param>
     public static void SetLayer(this GameObject gameObject, int layer, bool includeChildren = false)
     {
         if (!includeChildren)
@@ -114,10 +114,11 @@ public static class EditorHelper
             gameObject.layer = layer;
             return;
         }
+
         foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
         {
             child.gameObject.layer = layer;
         }
     }
-
+    
 }

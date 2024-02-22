@@ -1,28 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cameracontrol : MonoBehaviour
+public class CameraControl : MonoBehaviour
 {
     private Transform myTransform = null;
-    //Å¸°ÙÀ¸·Î ºÎÅÍÀÇ ¶³¾îÁø °Å¸®.
+    //íƒ€ê²Ÿìœ¼ë¡œ ë¶€í„°ì˜ ë–¨ì–´ì§„ ê±°ë¦¬.
     public float distance = 5f;
-    //Å¸°ÙÀ¸·Î ºÎÅÍÀÇ ³ôÀÌ
+    //íƒ€ê²Ÿìœ¼ë¡œ ë¶€í„°ì˜ ë†’ì´.
     public float height = 1.5f;
-    //³ôÀÌ°ª º¯°æ ¼Óµµ
+    //ë†’ì´ê°’ ë³€ê²½ ì†ë„.
     public float heightDamping = 2.0f;
-    //È¸Àü°ª º¯°æ ¼Óµµ
+    //íšŒì „ê°’ ë³€ê²½ ì†ë„.
     public float rotationDamping = 3.0f;
-    //Å¸ÄÏ.
+    //íƒ€ê²Ÿ.
     public Transform target = null;
-
-
+    
     // Start is called before the first frame update
     void Start()
     {
         myTransform = GetComponent<Transform>();
-        //Å¹µ«ÀÌ ¾ø´Ù¸é Player¶ó´Â ÅÂ±×¸¦ °¡Áö°í ÀÖ´Â°ÔÀÓ¿ÀºêÁ§Æ®°¡ Å¸°ÙÀÌ´Ù.
-        if(target == null)
+        //íƒ€ê²Ÿì´ ì—†ë‹¤ë©´ Playerë¼ëŠ” íƒœê·¸ë¥¼ ê°€ì§€ê³  ìˆëŠ” ê²Œì„ì˜¤ë¸Œì íŠ¸ê°€ íƒ€ê²Ÿì´ë‹¤.
+        if (target == null)
         {
             target = GameObject.FindWithTag("Player").transform;
         }
@@ -30,31 +30,30 @@ public class Cameracontrol : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(target ==null)
+        if (target == null)
         {
             return;
         }
-        //Ä«¸Ş¶ó°¡ ¸ñÇ¥·Î ÇÏ°í ÀÖ´Â ÃÖÀü YÃà°ª°ú ³ôÀÌ°ª.
+        //ì¹´ë©”ë¼ê°€ ëª©í‘œë¡œ í•˜ê³  ìˆëŠ” íšŒì „ Yì¶•ê°’ê³¼ ë†’ì´ê°’.
         float wantedRotationAngle = target.eulerAngles.y;
         float wantedHeight = target.position.y + height;
-        //ÇöÀç Ä«¸Ş¶ó°¡ ¹Ù¶óº¸°í ÀÖ´Â È¸Àü Y°ª°ú ³ôÀÌ°ª.
-        float currentRotationangle = myTransform.eulerAngles.y;
+        //í˜„ì¬ ì¹´ë©”ë¼ê°€ ë°”ë¼ë³´ê³  ìˆëŠ” íšŒì „ Yì¶•ê°’ê³¼ ë†’ì´ê°’.
+        float currentRotationAngle = myTransform.eulerAngles.y;
         float currentHeight = myTransform.position.y;
-
-        currentRotationangle = Mathf.LerpAngle(currentRotationangle,
+        //í˜„ì¬ ì¹´ë©”ë¼ê°€ ë°”ë¼ë³´ê³  ìˆëŠ” íšŒì „ê°’ê³¼ ë†’ì´ê°’ì„ ë³´ê°„í•´ì„œ ìƒˆë¡œìš´ ê°’ìœ¼ë¡œ ê³„ì‚°.
+        currentRotationAngle = Mathf.LerpAngle(currentRotationAngle,
             wantedRotationAngle, rotationDamping * Time.deltaTime);
         currentHeight = Mathf.Lerp(currentHeight, wantedHeight, heightDamping * Time.deltaTime);
-
-        Quaternion currentRotation = Quaternion.Euler(0.0f, currentRotationangle, 0.0f);
-        //Ä«¸Ş¶ó°¡ Å¸ÄÏÀÇ À§Ä¡¿¡¼­ È¸ÀüÇÏ°í ÇÏ´Â ¹éÅÍ¸¸Å­ µÚ·Î ÀÌµ¿ÇÑ´Ù
+        //ìœ„ì—ì„œ ê³„ì‚°í•œ íšŒì „ê°’ìœ¼ë¡œ ì¿¼í„°ë‹ˆì–¸ íšŒì „ê°’ì„ ìƒì„±.
+        Quaternion currentRotation = Quaternion.Euler(0.0f, currentRotationAngle, 0.0f);
+        //ì¹´ë©”ë¼ê°€ íƒ€ê²Ÿì˜ ìœ„ì¹˜ì—ì„œ íšŒì „í•˜ê³ ì í•˜ëŠ” ë²¡í„°ë§Œí¼ ë’¤ë¡œ ì´ë™í•œë‹¤.
         myTransform.position = target.position;
         myTransform.position -= currentRotation * Vector3.forward * distance;
-        //ÀÌµ¿ÇÑ À§Ä¡¿¡¼­ ¿øÇÏ´Â ³ôÀÌ°ªÀ¸·Î ¿Ã¶ó°£´Ù.
+        //ì´ë™í•œ ìœ„ì¹˜ì—ì„œ ì›í•˜ëŠ” ë†’ì´ê°’ìœ¼ë¡œ ì˜¬ë¼ê°„ë‹¤.
         myTransform.position = new Vector3(myTransform.position.x,
             currentHeight, myTransform.position.z);
-        //Å¸°ÙÀ» Ç×»ó ¹Ù¶óº¸µµ·Ï ÇÑ´Ù. forward -> target
+        //íƒ€ê²Ÿì„ í•­ìƒ ë°”ë¼ë³´ë„ë¡ í•œë‹¤. forward -> target
         myTransform.LookAt(target);
 
     }
-
 }

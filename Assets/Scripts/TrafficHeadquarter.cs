@@ -4,22 +4,21 @@ using UnityEngine;
 
 public class TrafficHeadquarter : MonoBehaviour
 {
-    //¼¼±×¸ÕÆ®¿Í ¼¼±×¸ÕÆ®»çÀÌÀÇ °ËÃâ °£°İ.
+    //ì„¸ê·¸ë¨¼íŠ¸ì™€ ì„¸ê·¸ë¨¼íŠ¸ì‚¬ì´ì˜ ê²€ì¶œ ê°„ê²©.
     public float segDetectThresh = 0.1f;
-    //¿şÀÌÆ÷ÀÎÆ®ÀÇ Å©±â.
+    //ì›¨ì´í¬ì¸íŠ¸ì˜ í¬ê¸°.
     public float waypointSize = 0.5f;
-    //Ãæµ¹ ·¹ÀÌ¾îµé.
+    //ì¶©ëŒ ë ˆì´ì–´ë“¤.
     public string[] collisionLayers;
 
     public List<TrafficSegment> segments = new List<TrafficSegment>();
     public TrafficSegment curSegment;
 
-    public const string VehicleTagLayer = "AutonomousVehicle";//ÀÚÀ²ÁÖÇàÂ÷.
-    //±³Â÷·Îµé
-    public List<TrafficIntersection> intersection = new List<TrafficIntersection>();
-
-    //¿¡µğÅÍ¿ë . ±âÁî¸ğ ¼Ó¼ºµé . º»ºÎ¿¡¼­ Á¶ÀıÇÏ°Ú½À´Ï´Ù
-
+    public const string VehicleTagLayer = "AutonomousVehicle";//ë¬´ì¸ìë™ì°¨.
+    //êµì°¨ë¡œë“¤.
+    public List<TrafficIntersection> intersections = new List<TrafficIntersection>();
+    
+    //ì—ë””í„°ìš©, ê¸°ì¦ˆëª¨ ì†ì„±ë“¤. ë³¸ë¶€ì—ì„œ ì¡°ì ˆí•˜ê² ìŠµë‹ˆë‹¤.
     public enum ArrowDraw
     {
         FixedCount,
@@ -33,7 +32,10 @@ public class TrafficHeadquarter : MonoBehaviour
     public float arrowDistance = 5f;
     public float arrowSizeWaypoint = 1;
     public float arrowSizeIntersection = 0.5f;
-
+    
+    
+    
+    
 
     public List<TrafficWaypoint> GetAllWaypoints()
     {

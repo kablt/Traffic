@@ -60,7 +60,7 @@ public class InspectorHelper
     public static void DrawArrowTypeSelection(TrafficHeadquarter trafficHeadquarter)
     {
         trafficHeadquarter.arrowDrawType = (TrafficHeadquarter.ArrowDraw)
-            EditorGUILayout.EnumPopup("È­»ìÇ¥ Å¸ÀÔ.", trafficHeadquarter.arrowDrawType);
+            EditorGUILayout.EnumPopup("í™”ì‚´í‘œ íƒ€ì….", trafficHeadquarter.arrowDrawType);
         EditorGUI.indentLevel++;
 
         switch (trafficHeadquarter.arrowDrawType)
@@ -69,7 +69,7 @@ public class InspectorHelper
                 IntField("Count", ref trafficHeadquarter.arrowCount, 1, int.MaxValue);
                 break;
             case TrafficHeadquarter.ArrowDraw.ByLength:
-                FloatField("È­»ìÇ¥»çÀÌÀÇ °Å¸®.", ref trafficHeadquarter.arrowDistance);
+                FloatField("í™”ì‚´í‘œì‚¬ì´ì˜ ê±°ë¦¬.", ref trafficHeadquarter.arrowDistance);
                 break;
             case TrafficHeadquarter.ArrowDraw.Off:
                 break;
@@ -79,12 +79,12 @@ public class InspectorHelper
 
         if (trafficHeadquarter.arrowDrawType != TrafficHeadquarter.ArrowDraw.Off)
         {
-            FloatField("È­»ìÇ¥ »çÀÌÁî : ¿şÀÌÆ÷ÀÎÆ®", ref trafficHeadquarter.arrowSizeWaypoint);
-            FloatField("È­»ìÇ¥ »çÀÌÁî : ±³Â÷·Î", ref trafficHeadquarter.arrowSizeIntersection);
+            FloatField("í™”ì‚´í‘œ ì‚¬ì´ì¦ˆ : ì›¨ì´í¬ì¸íŠ¸", ref trafficHeadquarter.arrowSizeWaypoint);
+            FloatField("í™”ì‚´í‘œ ì‚¬ì´ì¦ˆ : êµì°¨ë¡œ", ref  trafficHeadquarter.arrowSizeIntersection);
         }
-
+        
 
         EditorGUI.indentLevel--;
     }
-
+    
 }

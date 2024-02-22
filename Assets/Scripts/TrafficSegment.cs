@@ -1,41 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 
 public class TrafficSegment : MonoBehaviour
 {
-    //´ÙÀ½¿¡ ÀÌµ¿ÇÒ ±¸°£(segment)µé.
+    //ë‹¤ìŒì— ì´ë™í•  êµ¬ê°„(segment)ë“¤.
     public List<TrafficSegment> nextSegments = new List<TrafficSegment>();
-    //ÀÌ ¼¼±×¸ÕÆ®ÀÇ ID °ª
+    //ì´ ì„¸ê·¸ë¨¼íŠ¸ì˜ ID ê°’.
     public int ID = -1;
-    //±¸°£ÀÌ °®°í ÀÖ´Â ¿şÀÌÆ÷ÀÎÆ®µé ½ÃÀÛ -> ³¡Á¡µî 2~3°³¸¦ º¸Åë °¡Áö°í ÀÖ´Ù.
+    //êµ¬ê°„ì´ ê°–ê³  ìˆëŠ” ì›¨ì´í¬ì¸íŠ¸ë“¤,ì‹œì‘ -> ëì ë“± ë³´í†µ 2~3ê°œë¥¼ ê°€ì§€ê³  ìˆë‹¤.
     public List<TrafficWaypoint> Waypoints = new List<TrafficWaypoint>();
 
     public bool IsOnSegment(Vector3 pos)
     {
         TrafficHeadquarter headquater = GetComponentInParent<TrafficHeadquarter>();
-
-        for(int i=0; i < Waypoints.Count-1; i++)
+        
+        for (int i = 0; i < Waypoints.Count - 1; i++)
         {
             Vector3 pos1 = Waypoints[i].transform.position;
             Vector3 pos2 = Waypoints[i + 1].transform.position;
-            //Ã¹¹ø¤Š ¿şÀÌÆ÷ÀÎÆ®¶û Â÷·® °Å¸®.
+            //ì²«ë²ˆì§¸ ì›¨ì´í¬ì¸íŠ¸ë‘ ì°¨ë‘ ê±°ë¦¬.
             float d1 = Vector3.Distance(pos1, pos);
-            //µÎ¹ø¤Š ¿şÀÌÆ÷ÀÎÆ®¶û Â÷·® °Å¸®
-            float d2 = Vector3 .Distance(pos2, pos);
-            //Ã¹¹ø¤Š ¿şÀÌÆ÷ÀÎÆ®¿Í µÎ¹ø¤Š ¿şÀÌÆ÷ÀÎÆ®ÀÇ °Å¸®.
+            //ë‘ë²ˆì§¸ ì›¨ì´í¬ì¸íŠ¸ë‘ ì°¨ë‘ ê±°ë¦¬.
+            float d2 = Vector3.Distance(pos2, pos);
+            //ì²«ë²ˆì§¸ ì›¨ì´í¬ì¸íŠ¸ì™€ ë‘ë²ˆì§¸ ì›¨ì´í¬ì¸íŠ¸ì˜ ê±°ë¦¬.
             float d3 = Vector3.Distance(pos1, pos2);
 
             float diff = (d1 + d2) - d3;
-            if(diff <headquater.segDetectThresh && 
-                diff>-headquater.segDetectThresh)
+            if (diff < headquater.segDetectThresh &&
+                diff > -headquater.segDetectThresh)
             {
-            //ÀÚµ¿Â÷°¡ µÎ ¿şÀÌÆ÷ÀÎÆ® »çÀÌ¿¡ ÀÖµû.
-            return true;
+                //ìë™ì°¨ê°€ ë‘ ì›¨ì´í¬ì¸íŠ¸ ì‚¬ì´ì— ê°€ê¹Œì´ ìˆë‹¤.
+                return true;
             }
         }
-            //µÎ ÀÚµ¿Â÷°¡ µÎ¿şÀÌÆ÷ÀÎÆ® »çÀÌ¿¡¼­ ¸Ö¸®ÀÖµû.
-            return false;
+        
+        //ìë™ì°¨ê°€  ë‘ ì›¨ì´í¬ì¸íŠ¸ ì‚¬ì´ì—ì„œ ë©€ë¦¬ ìˆë‹¤.
+        return false;
     }
 
 }
