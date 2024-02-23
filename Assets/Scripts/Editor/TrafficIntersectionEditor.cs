@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
 
 [CustomEditor(typeof(TrafficIntersection))]
 public class TrafficIntersectionEditor : Editor
@@ -16,25 +16,26 @@ public class TrafficIntersectionEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        intersection.IntersectionType = (IntersectionType)EditorGUILayout.EnumPopup("±³Â÷·Î Å¸ÀÔ", intersection.IntersectionType);
+        intersection.IntersectionType = (IntersectionType)EditorGUILayout.EnumPopup(
+            "êµì°¨ë¡œ íƒ€ì….", intersection.IntersectionType);
         EditorGUI.BeginDisabledGroup(intersection.IntersectionType != IntersectionType.STOP);
         {
-            InspectorHelper.Header("¿ì¼± ¸ØÃã ±¸°£");
-            InspectorHelper.PropertyField("¿ì¼± ±¸°£", "prioritySegments", serializedObject);
+            InspectorHelper.Header("ìš°ì„  ë©ˆì¶¤ êµ¬ê°„.");
+            InspectorHelper.PropertyField("ìš°ì„  êµ¬ê°„", "prioritySegments", serializedObject);
             serializedObject.ApplyModifiedProperties();
         }
         EditorGUI.EndDisabledGroup();
-
+        
         EditorGUI.BeginDisabledGroup(intersection.IntersectionType != IntersectionType.TRAFFIC_LIGHT);
         {
-            InspectorHelper.Header("½ÅÈ£ ±³Â÷·Î.");
-            InspectorHelper.FloatField("½ÅÈ£ ½Ã°£ (ÃÊ)", ref intersection.lightDuration);
-            InspectorHelper.FloatField("ÁÖÈ²ºÒ ½Ã°£(ÃÊ)", ref intersection.orangeLightDuration);
-            InspectorHelper.PropertyField("Ã¹¹ø¤Š »¡°£ ºÒ ±×·ì1.", "LightGroup1", serializedObject);
-            InspectorHelper.PropertyField("µÎ¹ø¤Š »¡°£ ºÒ ±×·ì2.", "LightGroup2", serializedObject);
+            InspectorHelper.Header("ì‹ í˜¸ êµì°¨ë¡œ.");
+            InspectorHelper.FloatField("ì‹ í˜¸ ì‹œê°„ (ì´ˆ).", ref intersection.lightDuration);
+            InspectorHelper.FloatField("ì£¼í™©ë¶ˆ ì‹œê°„(ì´ˆ).", ref intersection.orangeLightDuration);
+            InspectorHelper.PropertyField("ì²«ë²ˆì§¸ ë¹¨ê°„ ë¶ˆ ê·¸ë£¹1.","lightGroup1", serializedObject);
+            InspectorHelper.PropertyField("ë‘ë²ˆì§¸ ë¹¨ê°„ ë¶ˆ ê·¸ë£¹2.","lightGroup2", serializedObject);
             serializedObject.ApplyModifiedProperties();
         }
         EditorGUI.EndDisabledGroup();
     }
-
+    
 }

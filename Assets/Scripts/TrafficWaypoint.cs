@@ -20,7 +20,7 @@ public class TrafficWaypoint : MonoBehaviour
         segment = newSegment;
         //WayPoint-1 , WayPoint-10
         name = "WayPoint-" + newID.ToString();
-        tag = "Waypoint";
+        tag = "Waypoint"; //이거 수정해주세요. WayPoint -> Waypoint.
         gameObject.layer = LayerMask.NameToLayer("Default");
         RemoveCollider();
     }

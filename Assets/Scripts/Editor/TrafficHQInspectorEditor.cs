@@ -3,32 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public static class TrafficHQInspectorEditor 
+public static class TrafficHQInspectorEditor
 {
-    public static void DrawInspector(TrafficHeadquarter trafficheadquarter, 
+    public static void DrawInspector(TrafficHeadquarter trafficHeadquarter,
         SerializedObject serializedObject, out bool restructureSystem)
     {
-        //±âÁî¸ğ ¼¼ÆÃ.
-        InspectorHelper.Header("±âÁî¸ğ ¼³Á¤");
-        InspectorHelper.Toggle("±âÁî¸ğ¸¦ ¼û±æ±î¿ä?", ref trafficheadquarter.hideGizmos);
-        //È­»ìÇ¥ ¼¼ÆÃ.
-        InspectorHelper.DrawArrowTypeSelection(trafficheadquarter);
-        InspectorHelper.FloatField("¿şÀÌÆ÷ÀÎÆ® Å©±â.", ref trafficheadquarter.waypointSize);
+        //ê¸°ì¦ˆëª¨ ì„¸íŒ….
+        InspectorHelper.Header("ê¸°ì¦ˆëª¨ ì„¤ì •.");
+        InspectorHelper.Toggle("ê¸°ì¦ˆëª¨ë¥¼ ìˆ¨ê¸¸ê¹Œìš”?.", ref trafficHeadquarter.hideGizmos);
+        //í™”ì‚´í‘œ ì„¸íŒ….
+        InspectorHelper.DrawArrowTypeSelection(trafficHeadquarter);
+        InspectorHelper.FloatField("ì›¨ì´í¬ì¸íŠ¸ í¬ê¸°.", ref trafficHeadquarter.waypointSize);
         EditorGUILayout.Space();
-        //½Ã½ºÅÛ ¼³Á¤.
-        InspectorHelper.Header("½Ã½ºÅÛ Á¤¸®.");
-        InspectorHelper.FloatField("±¸°£ °¨Áö ÃÖ¼Ò °Å¸®", ref trafficheadquarter.segDetectThresh);
-        InspectorHelper.PropertyField("Ãæµ¹ ·¹ÀÌ¾îµé,", "collisionLayers", serializedObject);
+        //ì‹œìŠ¤í…œ ì„¤ì •.
+        InspectorHelper.Header("ì‹œìŠ¤í…œ ì„¤ì •.");
+        InspectorHelper.FloatField("êµ¬ê°„ ê°ì§€ ìµœì†Œ ê±°ë¦¬", 
+            ref trafficHeadquarter.segDetectThresh);
+        InspectorHelper.PropertyField("ì¶©ëŒ ë ˆì´ì–´ë“¤, ","collisionLayers", serializedObject);
         EditorGUILayout.Space();
-        //µµ¿ò¸».
-        InspectorHelper.HelpBox("Ctrl + ¸¶¿ì½º ¿ŞÂÊ Å° : ¼¼±×¸ÕÆ® »ı¼º \n" +
-                                    "Shift + ¸¶¿ì½º ¿ŞÂÊ : ¿şÀÌÆ÷ÀÎÆ® »ı¼º \n" +
-                                    "Alt + ¸¶¿ì½º ¿ŞÂÊ : ±³Â÷·Î »ı¼º");
-        InspectorHelper.HelpBox("Â÷·®Àº Ãß°¡ÇÑ´ë·Î ¿şÀÌÆ÷ÀÎÆ®¸¦ µû¶ó¼­ ÀÌµ¿ÇÏ°Ô µË´Ï´Ù.");
-
+        //ë„ì›€ë§.
+        InspectorHelper.HelpBox("Ctrl + ë§ˆìš°ìŠ¤ ì™¼ìª½ : ì„¸ê·¸ë¨¼íŠ¸ ìƒì„± \n " +
+                                "Shift + ë§ˆìš°ìŠ¤ ì™¼ìª½ : ì›¨ì´í¬ì¸íŠ¸ ìƒì„± \n" +
+                                "Alt + ë§ˆìš°ìŠ¤ ì™¼ìª½ : êµì°¨ë¡œ ìƒì„±");
+        InspectorHelper.HelpBox("ì°¨ëŸ‰ì€ ì¶”ê°€í•œëŒ€ë¡œ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ë”°ë¼ì„œ ì´ë™í•˜ê²Œ ë©ë‹ˆë‹¤.");
+        
         EditorGUILayout.Space();
-        restructureSystem = InspectorHelper.Button("±³Åë ½Ã¹Ä·¹ÀÌ¼Ç ½Ã½ºÅÛ Àç±¸¼º/");
-
+        restructureSystem = InspectorHelper.Button("êµí†µ ì‹œë®¬ë ˆì´ì…˜ ì‹œìŠ¤í…œ ì¬êµ¬ì„±.");
     }
-
 }

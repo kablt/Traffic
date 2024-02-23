@@ -9,11 +9,11 @@ using UnityEditor;
 public class TrafficHQEditor : Editor
 {
     private TrafficHeadquarter headquarter;
-    //¿şÀÌÆ÷ÀÎÆ® ¼³Ä¡ÇÒ¶§ ÇÊ¿äÇÑ ÀÓ½Ã ÀúÀå¼Òµé.
+    //ì›¨ì´í¬ì¸íŠ¸ ì„¤ì¹˜í• ë•Œ í•„ìš”í•œ ì„ì‹œ ì €ì¥ì†Œë“¤.
     private Vector3 startPosition;
     private Vector3 lastPoint;
     private TrafficWaypoint lastWaypoint;
-    //traffic ½Ã¹Ä·¹ÀÌÅÍÀÇ ±â¹İÀÌµÇ´Â ½ºÅ©¸³Æ®µé »ı¼º.
+    //traffic ì‹œë®¬ë ˆì´í„°ì˜ ê¸°ë°˜ì´ë˜ëŠ” ìŠ¤í¬ë¦½íŠ¸ë“¤ ìƒì„±.
     [MenuItem("Component/TrafficTool/Create Traffic System")]
     private static void CreateTrafficSystem()
     {
@@ -22,60 +22,60 @@ public class TrafficHQEditor : Editor
         GameObject headquarterObject = EditorHelper.CreateGameObject("Traffic Headquarter");
         EditorHelper.AddComponent<TrafficHeadquarter>(headquarterObject);
 
-        GameObject segmentsObject = EditorHelper.CreateGameObject("Segments",
+        GameObject segmentsObject = EditorHelper.CreateGameObject("Segments", 
             headquarterObject.transform);
         GameObject intersectionsObject = EditorHelper.CreateGameObject("Intersections",
             headquarterObject.transform);
-
+        
         Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
     }
     private void OnEnable()
     {
         headquarter = target as TrafficHeadquarter;
     }
-
-    //¿şÀÌÆ÷ÀÎÆ® Ãß°¡.
+    
+    //ì›¨ì´í¬ì¸íŠ¸ ì¶”ê°€.
     private void AddWaypoint(Vector3 position)
     {
-        //¿şÀÌÆ÷ÀÎÆ® °ÔÀÓ¿ÀºêÁ§Æ®¸¦ »õ·Î »ı¼º.
+        //ì›¨ì´í¬ì¸íŠ¸ ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒˆë¡œ ìƒì„±.
         GameObject go = EditorHelper.CreateGameObject(
             "Waypoint-" + headquarter.curSegment.Waypoints.Count,
             headquarter.curSegment.transform);
-        //À§Ä¡´Â ³»°¡ Å¬¸¯ÇÑ °÷À¸·Î ÇÕ´Ï´Ù.
+        //ìœ„ì¹˜ëŠ” ë‚´ê°€ í´ë¦­í•œ ê³³ìœ¼ë¡œ í•©ë‹ˆë‹¤.
         go.transform.position = position;
         TrafficWaypoint waypoint = EditorHelper.AddComponent<TrafficWaypoint>(go);
         waypoint.Refresh(headquarter.curSegment.Waypoints.Count,
             headquarter.curSegment);
-        Undo.RecordObject(headquarter.curSegment, "");
-        //HQ¿¡ »ı¼±ÇÑ ¿şÀÌÆ÷ÀÎÆ®¸¦ ÇöÀç ÀÛ¾÷ÁßÀÎ ¼¼±×¸ÕÆ®¿¡ Ãß°¡ÇÕ´Ï´Ù.
+        Undo.RecordObject(headquarter.curSegment,"");
+        //HQì— ìƒì„ í•œ ì›¨ì´í¬ì¸íŠ¸ë¥¼ í˜„ì¬ ì‘ì—…ì¤‘ì¸ ì„¸ê·¸ë¨¼íŠ¸ì— ì¶”ê°€í•©ë‹ˆë‹¤.
         headquarter.curSegment.Waypoints.Add(waypoint);
     }
-
-    //¼¼±×¸ÕÆ® Ãß°¡.
+    
+    //ì„¸ê·¸ë¨¼íŠ¸ ì¶”ê°€.
     private void AddSegment(Vector3 position)
     {
         int segID = headquarter.segments.Count;
-        //Segments¶ó°í ¸¸µç ºó °ÔÀÓ¿ÀºêÁ§Æ®ÀÇ Â÷ÀÏµå·Î ¼¼±×¸ÕÆ® °ÔÀÓ¿ÀºêÁ§Æ®¸¦ »ı¼ºÇÕ´Ï´Ù.
+        //Segmentsë¼ê³  ë§Œë“  ë¹ˆ ê²Œì„ì˜¤ë¸Œì íŠ¸ì˜ ì°¨ì¼ë“œë¡œ ì„¸ê·¸ë¨¼íŠ¸ ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
         GameObject segGameObject = EditorHelper.CreateGameObject(
-            "Segment-" + segID, headquarter.transform.GetChild(0).transform);
-        //³»°¡ Áö±İ Å¬¸¯ÇÑ À§Ä¡¿¡ ¼¼±×¸ÕÆ®¸¦ ÀÌµ¿½ÃÅµ´Ï´Ù.
+            "Segment-"+segID, headquarter.transform.GetChild(0).transform);
+        //ë‚´ê°€ ì§€ê¸ˆ í´ë¦­í•œ ìœ„ì¹˜ì— ì„¸ê·¸ë¨¼íŠ¸ë¥¼ ì´ë™ì‹œí‚µë‹ˆë‹¤.
         segGameObject.transform.position = position;
-        //HQ¿¡ ÇöÀç ÀÛ¾÷ÁßÀÎ ¼¼±×¸ÕÆ®¿¡ »õ·Î ¸¸µç ¼¼±×¸ÕÆ® ½ºÅ©¸³Æ®¸¦ ¿¬°áÇØÁİ´Ï´Ù.
-        //ÀÌÈÄ¿¡ Ãß°¡µÇ´Â ¿şÀÌÆ÷ÀÎÆ®´Â ÇöÀç ÀÛ¾÷ÁßÀÎ ¼¼±×¸ÕÆ®¿¡ Ãß°¡µÇ°Ô µË´Ï´Ù.
+        //HQì— í˜„ì¬ ì‘ì—…ì¤‘ì¸ ì„¸ê·¸ë¨¼íŠ¸ì— ìƒˆë¡œ ë§Œë“  ì„¸ê·¸ë¨¼íŠ¸ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì—°ê²°í•´ì¤ë‹ˆë‹¤.
+        //ì´í›„ì— ì¶”ê°€ë˜ëŠ” ì›¨ì´í¬ì¸íŠ¸ëŠ” í˜„ì¬ ì‘ì—…ì¤‘ì¸ ì„¸ê·¸ë¨¼íŠ¸ì— ì¶”ê°€ë˜ê²Œ ë©ë‹ˆë‹¤.
         headquarter.curSegment = EditorHelper.AddComponent<TrafficSegment>(segGameObject);
         headquarter.curSegment.ID = segID;
         headquarter.curSegment.Waypoints = new List<TrafficWaypoint>();
         headquarter.curSegment.nextSegments = new List<TrafficSegment>();
-
+        
         Undo.RecordObject(headquarter, "");
         headquarter.segments.Add(headquarter.curSegment);
     }
-
-    //ÀÎÅÍ¼½¼Ç Ãß°¡.
+    
+    //ì¸í„°ì„¹ì…˜ ì¶”ê°€.
     private void AddIntersection(Vector3 position)
     {
         int intID = headquarter.intersections.Count;
-        //»õ·Î¿î ±³Â÷·Î±¸°£À» ¸¸µé¾î¼­ Intersections °ÔÀÓ¿ÀºêÁ§Æ® Â÷ÀÏµå·Î ºÙ¿©Áİ´Ï´Ù.
+        //ìƒˆë¡œìš´ êµì°¨ë¡œêµ¬ê°„ì„ ë§Œë“¤ì–´ì„œ Intersections ê²Œì„ì˜¤ë¸Œì íŠ¸ ì°¨ì¼ë“œë¡œ ë¶™ì—¬ì¤ë‹ˆë‹¤.
         GameObject intersection = EditorHelper.CreateGameObject(
             "Intersection-" + intID, headquarter.transform.GetChild(1).transform);
         intersection.transform.position = position;
@@ -85,46 +85,46 @@ public class TrafficHQEditor : Editor
         TrafficIntersection trafficIntersection = EditorHelper.AddComponent<TrafficIntersection>(
             intersection);
         trafficIntersection.ID = intID;
-
-        Undo.RecordObject(headquarter, "");
+        
+        Undo.RecordObject(headquarter,"");
         headquarter.intersections.Add(trafficIntersection);
     }
-    //¾À¿¡¼­ Á÷Á¢ ¼³Ä¡ÇØº¸µµ·Ï ÇÏ°Ú½À´Ï´Ù.
+    //ì”¬ì—ì„œ ì§ì ‘ ì„¤ì¹˜í•´ë³´ë„ë¡ í•˜ê² ìŠµë‹ˆë‹¤.
     //Shift 
     //Control
     //Alt
     private void OnSceneGUI()
     {
-        //¸¶¿ì½º Å¬¸¯ Á¶ÀÛÀÌ ÀÖ¾ú´ÂÁö ¾ò¾î¿É´Ï´Ù.
+        //ë§ˆìš°ìŠ¤ í´ë¦­ ì¡°ì‘ì´ ìˆì—ˆëŠ”ì§€ ì–»ì–´ì˜µë‹ˆë‹¤.
         Event @event = Event.current;
         if (@event == null)
         {
             return;
         }
-        //¸¶¿ì½ºÆ÷Áö¼Ç À§Ä¡·Î ·¹ÀÌ¸¦ ¸¸µé¾îÁİ´Ï´Ù.
+        //ë§ˆìš°ìŠ¤í¬ì§€ì…˜ ìœ„ì¹˜ë¡œ ë ˆì´ë¥¼ ë§Œë“¤ì–´ì¤ë‹ˆë‹¤.
         Ray ray = HandleUtility.GUIPointToWorldRay(@event.mousePosition);
         RaycastHit hit;
-        //¸¶¿ì½º À§Ä¡·Î Ãæµ¹Ã¼ °ËÃâÀÌ µÇ¾ú°í, ¸¶¿ì½º ¿ŞÂÊ Å¬¸¯À¸·Î ÀÎÇØ ¹ß»ıÇÏ¿´´Ù.
-        //0 ¿ŞÂÊ Å¬¸¯ 1 ¿À¸¥ÂÊ Å¬¸¯ 2´Â ÈÙ¹öÆ°
+        //ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¡œ ì¶©ëŒì²´ ê²€ì¶œì´ ë˜ì—ˆê³ , ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ìœ¼ë¡œ ì¸í•´ ë°œìƒí•˜ì˜€ë‹¤.
+        //0 ì™¼ìª½ í´ë¦­ 1 ì˜¤ë¥¸ìª½ í´ë¦­ 2ëŠ” íœ ë²„íŠ¼
         if (Physics.Raycast(ray, out hit) &&
             @event.type == EventType.MouseDown &&
             @event.button == 0)
         {
-            //¸¶¿ì½º ¿ŞÂÊ Å¬¸¯ + Shift -> ¿şÀÌÆ÷ÀÎÆ® Ãß°¡.
+            //ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ + Shift -> ì›¨ì´í¬ì¸íŠ¸ ì¶”ê°€.
             if (@event.shift)
             {
-                //±¸°£¾ø´Â ¿şÀÌÆ÷ÀÎÆ®´Â Á¸ÀçÇÒ ¼ö ¾ø½À´Ï´Ù.
+                //êµ¬ê°„ì—†ëŠ” ì›¨ì´í¬ì¸íŠ¸ëŠ” ì¡´ì¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
                 if (headquarter.curSegment == null)
                 {
-                    Debug.LogWarning("¼¼±×¸ÕÆ® ¸ÕÀú ¸¸µé¾îÁÖ¼¼¿ä.");
+                    Debug.LogWarning("ì„¸ê·¸ë¨¼íŠ¸ ë¨¼ì € ë§Œë“¤ì–´ì£¼ì„¸ìš”.");
                     return;
                 }
                 EditorHelper.BeginUndoGroup("Add WayPoint", headquarter);
                 AddWaypoint(hit.point);
                 Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
             }
-            //¸¶¿ì½º ¿ŞÂÊ Å¬¸¯ + Control -> ¼¼±×¸ÕÆ® Ãß°¡.
-            //Ã¹¹øÂ° ¿şÀÌÆ÷ÀÎÆ®µµ °°ÀÌ Ãß°¡µË´Ï´Ù.
+            //ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ + Control -> ì„¸ê·¸ë¨¼íŠ¸ ì¶”ê°€.
+            //ì²«ë²ˆì§¸ ì›¨ì´í¬ì¸íŠ¸ë„ ê°™ì´ ì¶”ê°€ë©ë‹ˆë‹¤.
             else if (@event.control)
             {
                 EditorHelper.BeginUndoGroup("Add Segment", headquarter);
@@ -132,7 +132,7 @@ public class TrafficHQEditor : Editor
                 AddWaypoint(hit.point);
                 Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
             }
-            //¸¶¿ì½º ¿ŞÂÊ Å¬¸¯ + Alt -> ÀÎÅÍ¼½¼Ç Ãß°¡.
+            //ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ + Alt -> ì¸í„°ì„¹ì…˜ ì¶”ê°€.
             else if (@event.alt)
             {
                 EditorHelper.BeginUndoGroup("Add Intersection", headquarter);
@@ -140,22 +140,22 @@ public class TrafficHQEditor : Editor
                 Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
             }
         }
-        //¿şÀÌÆ÷ÀÎÆ® ½Ã½ºÅÛÀ» È÷¾î¶óÅ°ºä¿¡¼­ ¼±ÅÃÇÑ °ÔÀÓ °´Ã¼·Î ¼³Á¤.
+        //ì›¨ì´í¬ì¸íŠ¸ ì‹œìŠ¤í…œì„ íˆì–´ë¼í‚¤ë·°ì—ì„œ ì„ íƒí•œ ê²Œì„ ê°ì²´ë¡œ ì„¤ì •.
         Selection.activeGameObject = headquarter.gameObject;
-        //¼±ÅÃÇÑ ¿şÀÌÆ÷ÀÎÆ®¸¦ Ã³¸®ÇÕ´Ï´Ù.
+        //ì„ íƒí•œ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ì²˜ë¦¬í•©ë‹ˆë‹¤.
         if (lastWaypoint != null)
         {
-            //·¹ÀÌ°¡ Ãæµ¹ÇÒ ¼ö ÀÖµµ·Ï PlaneÀ» »ç¿ëÇÕ´Ï´Ù.
+            //ë ˆì´ê°€ ì¶©ëŒí•  ìˆ˜ ìˆë„ë¡ Planeì„ ì‚¬ìš©í•©ë‹ˆë‹¤.
             Plane plane = new Plane(Vector3.up, lastWaypoint.GetVisualPos());
             plane.Raycast(ray, out float dst);
             Vector3 hitPoint = ray.GetPoint(dst);
-            //¸¶¿ì½º ¹öÆ°À» Ã³À½ ´­·¶À»¶§, LastPoint Àç¼³Á¤.
+            //ë§ˆìš°ìŠ¤ ë²„íŠ¼ì„ ì²˜ìŒ ëˆŒë €ì„ë•Œ, LastPoint ì¬ì„¤ì •.
             if (@event.type == EventType.MouseDown && @event.button == 0)
             {
                 lastPoint = hitPoint;
                 startPosition = lastWaypoint.transform.position;
             }
-            //¼±ÅÃÇÑ ¿şÀÌÆ÷ÀÎÆ®¸¦ ÀÌµ¿.
+            //ì„ íƒí•œ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ì´ë™.
             if (@event.type == EventType.MouseDrag && @event.button == 0)
             {
                 Vector3 realPos = new Vector3(
@@ -163,7 +163,7 @@ public class TrafficHQEditor : Editor
                 lastWaypoint.transform.position += realPos;
                 lastPoint = hitPoint;
             }
-            //¼±ÅÃÇÑ ¿şÀÌÆ÷ÀÎÆ®¸¦ ÇØÁ¦.
+            //ì„ íƒí•œ ì›¨ì´í¬ì¸íŠ¸ë¥¼ í•´ì œ.
             if (@event.type == EventType.MouseUp && @event.button == 0)
             {
                 Vector3 curPos = lastWaypoint.transform.position;
@@ -171,37 +171,37 @@ public class TrafficHQEditor : Editor
                 Undo.RegisterFullObjectHierarchyUndo(lastWaypoint, "Move WayPoint");
                 lastWaypoint.transform.position = curPos;
             }
-            //±¸ ÇÏ³ª ±×¸®°Ú½À´Ï´Ù.
-            Handles.SphereHandleCap(0, lastWaypoint.GetVisualPos(), Quaternion.identity,
+            //êµ¬ í•˜ë‚˜ ê·¸ë¦¬ê² ìŠµë‹ˆë‹¤.
+            Handles.SphereHandleCap(0, lastWaypoint.GetVisualPos(), Quaternion.identity, 
                 headquarter.waypointSize * 2f, EventType.Repaint);
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
             SceneView.RepaintAll();
         }
-        //¸ğµç ¿şÀÌÆ÷ÀÎÆ®·ÎºÎÅÍ ÆÇº°½ÄÀ» ÅëÇØ Ãæµ¹µÇ´Â ¿şÀÌÆ÷ÀÎÆ®¸¦ lastWaypoint·Î ¼¼ÆÃ.
+        //ëª¨ë“  ì›¨ì´í¬ì¸íŠ¸ë¡œë¶€í„° íŒë³„ì‹ì„ í†µí•´ ì¶©ëŒë˜ëŠ” ì›¨ì´í¬ì¸íŠ¸ë¥¼ lastWaypointë¡œ ì„¸íŒ….
         if (lastWaypoint == null)
         {
-            //¸ğµç ¿şÀÌÆ÷ÀÎÆ®ÇÑÅ× Áö±İ ³»°¡ ¸¶¿ì½º À§Ä¡¿¡¼­ »ı¼ºÇÑ ·¹ÀÌ°¡ Ãæµ¹µÇ´ÂÁö È®ÀÎ.
+            //ëª¨ë“  ì›¨ì´í¬ì¸íŠ¸í•œí…Œ ì§€ê¸ˆ ë‚´ê°€ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ì—ì„œ ìƒì„±í•œ ë ˆì´ê°€ ì¶©ëŒë˜ëŠ”ì§€ í™•ì¸.
             lastWaypoint = headquarter.GetAllWaypoints()
                 .FirstOrDefault(
                     i => EditorHelper.SphereHit(i.GetVisualPos(),
                         headquarter.waypointSize, ray));
         }
-        //HQÀÇ ÇöÀç ¼öÁ¤ÁßÀÎ ¼¼±×¸ÕÆ®¸¦ ÇöÀç ¼±ÅÃÇÑ ¼¼±×¸ÕÆ®·Î ´ëÃ¼ÇÕ´Ï´Ù.
+        //HQì˜ í˜„ì¬ ìˆ˜ì •ì¤‘ì¸ ì„¸ê·¸ë¨¼íŠ¸ë¥¼ í˜„ì¬ ì„ íƒí•œ ì„¸ê·¸ë¨¼íŠ¸ë¡œ ëŒ€ì²´í•©ë‹ˆë‹¤.
         if (lastWaypoint != null && @event.type == EventType.MouseDown)
         {
             headquarter.curSegment = lastWaypoint.segment;
         }
-        //ÇöÀç ¿şÀÌÆ÷ÀÎÆ®¸¦ Àç¼³Á¤.¸¶¿ì½º¸¦ ÀÌµ¿ÇÏ¸é ¼±ÅÃÀÌ Ç®¸®µµ·Ï.
+        //í˜„ì¬ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ì¬ì„¤ì •.ë§ˆìš°ìŠ¤ë¥¼ ì´ë™í•˜ë©´ ì„ íƒì´ í’€ë¦¬ë„ë¡.
         else if (lastWaypoint != null && @event.type == EventType.MouseMove)
         {
             lastWaypoint = null;
         }
 
     }
-    //½Ã¹Ä·¹ÀÌÅÍ ¼¼ÆÃ ¸¶¹«¸®¿¡ Àç¼³Á¤À» ÇØ¼­ ¹®Á¦°¡ ¾øÀÌ Àß µ¹¾Æ°¡µµ·Ï ÇØÁİ´Ï´Ù.
+    //ì‹œë®¬ë ˆì´í„° ì„¸íŒ… ë§ˆë¬´ë¦¬ì— ì¬ì„¤ì •ì„ í•´ì„œ ë¬¸ì œê°€ ì—†ì´ ì˜ ëŒì•„ê°€ë„ë¡ í•´ì¤ë‹ˆë‹¤.
     void RestructureSystem()
     {
-        //±¸°£°ú ¿şÀÌÆ÷ÀÎÆ®ÀÇ ÀÌ¸§ ¹Ù²Ù±â, ±¸Á¶¸¦ Á¶Á¤
+        //êµ¬ê°„ê³¼ ì›¨ì´í¬ì¸íŠ¸ì˜ ì´ë¦„ ë°”ê¾¸ê¸°, êµ¬ì¡°ë¥¼ ì¡°ì •
         List<TrafficSegment> segmentsList = new List<TrafficSegment>();
         int itSeg = 0;
         foreach (Transform trans in headquarter.transform.GetChild(0).transform)
@@ -230,7 +230,7 @@ public class TrafficHQEditor : Editor
                 itSeg++;
             }
         }
-        // Next ¼¼±×¸ÕÆ®µµ ¸¶Âù°¡Áö·Î ¸®½ºÆ®¿¡¼­ »èÁ¦µÈ °Ç »©ÁØ´Ù.
+        // Next ì„¸ê·¸ë¨¼íŠ¸ë„ ë§ˆì°¬ê°€ì§€ë¡œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œëœ ê±´ ë¹¼ì¤€ë‹¤.
         foreach (TrafficSegment segment in segmentsList)
         {
             List<TrafficSegment> nextSegmentsList = new List<TrafficSegment>();
@@ -244,9 +244,9 @@ public class TrafficHQEditor : Editor
 
             segment.nextSegments = nextSegmentsList;
         }
-        //»õ·Î¸¸µç ¼¼±×¸ÕÆ® ¸®½ºÆ®¸¦ ´Ù½Ã HQ¿¡ ÇÒ´çÇÕ´Ï´Ù.
+        //ìƒˆë¡œë§Œë“  ì„¸ê·¸ë¨¼íŠ¸ ë¦¬ìŠ¤íŠ¸ë¥¼ ë‹¤ì‹œ HQì— í• ë‹¹í•©ë‹ˆë‹¤.
         headquarter.segments = segmentsList;
-        //±³Â÷·Îµµ ¸¶Âù°¡Áö·Î.
+        //êµì°¨ë¡œë„ ë§ˆì°¬ê°€ì§€ë¡œ.
         List<TrafficIntersection> intersectionList = new List<TrafficIntersection>();
         int itInter = 0;
         foreach (Transform transInter in headquarter.transform.GetChild(1).transform)
@@ -262,28 +262,28 @@ public class TrafficHQEditor : Editor
         }
 
         headquarter.intersections = intersectionList;
-        //º¯°æµÈ °Ô ÀÖÀ¸¸é ¾Àµµ »õ·Î ±×¸®°í ÀúÀåÇÒ Áö ¹°¾îº¸´Â ½ÄÀ¸·Î.
-        //¹Ù²ï°Ô ÀÖµû°í À¯´ÏÆ¼ÇÑÅ× ¾Ë·ÁÁİ´Ï´Ù. ½ÉÁö¾î º¯°æµÈ°Ô ¾ø¾îµµ ÇÑ¹ø ±×³É °»½Å½ÃÄÑÁÜ.
+        //ë³€ê²½ëœ ê²Œ ìˆìœ¼ë©´ ì”¬ë„ ìƒˆë¡œ ê·¸ë¦¬ê³  ì €ì¥í•  ì§€ ë¬¼ì–´ë³´ëŠ” ì‹ìœ¼ë¡œ.
+        //ë°”ë€ê²Œ ìˆë”°ê³  ìœ ë‹ˆí‹°í•œí…Œ ì•Œë ¤ì¤ë‹ˆë‹¤. ì‹¬ì§€ì–´ ë³€ê²½ëœê²Œ ì—†ì–´ë„ í•œë²ˆ ê·¸ëƒ¥ ê°±ì‹ ì‹œì¼œì¤Œ.
         if (!EditorUtility.IsDirty(target))
         {
             EditorUtility.SetDirty(target);
         }
-        Debug.Log("[±³Åë ½Ã¹Ä·¹ÀÌ¼Ç] ¼º°øÀûÀ¸·Î ÀçºôµåÇÏ¿´½À´Ï´Ù.");
+        Debug.Log("[êµí†µ ì‹œë®¬ë ˆì´ì…˜] ì„±ê³µì ìœ¼ë¡œ ì¬ë¹Œë“œí•˜ì˜€ìŠµë‹ˆë‹¤.");
     }
 
     public override void OnInspectorGUI()
     {
         EditorGUI.BeginChangeCheck();
         {
-            Undo.RecordObject(headquarter, "Traffic Inspector Edit");
-            TrafficHQInspectorEditor.DrawInspector(headquarter, serializedObject,
-                out bool restructureSystem);
-            if (restructureSystem)
-            {
-                RestructureSystem();
-            }
+          Undo.RecordObject(headquarter, "Traffic Inspector Edit");
+          TrafficHQInspectorEditor.DrawInspector(headquarter,serializedObject, 
+              out bool restructureSystem);
+          if (restructureSystem)
+          {
+              RestructureSystem();
+          }
         }
-        //°ªÀÌ ÆíÁıµÇ °æ¿ì ¾ÀÀ» ¾Æ¿¹ ´Ù½Ã ÇÑ¹ø ±×·ÁÁÖÀÚ.
+        //ê°’ì´ í¸ì§‘ë˜ ê²½ìš° ì”¬ì„ ì•„ì˜ˆ ë‹¤ì‹œ í•œë²ˆ ê·¸ë ¤ì£¼ì.
         if (EditorGUI.EndChangeCheck())
         {
             SceneView.RepaintAll();

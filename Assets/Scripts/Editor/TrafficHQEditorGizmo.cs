@@ -7,24 +7,25 @@ using System.Linq;
 
 public static class TrafficHQEditorGizmo
 {
-    // È­»ìÇ¥¸¦ ±×¸³´Ï´Ù. ´ë°¢¼± 45µµ ¹æÇâ ¾çÂÊ 2°³ .
+    //í™”ì‚´í‘œë¥¼ ê·¸ë¦½ë‹ˆë‹¤. ëŒ€ê°ì„  45ë„ ë°©í–¥ ì–‘ìª½ 2ê°œ.
     private static void DrawArrow(Vector3 point, Vector3 forward, float size)
     {
         forward = forward.normalized * size;
         Vector3 left = Quaternion.Euler(0f, 45f, 0f) * forward;
         Vector3 right = Quaternion.Euler(0f, -45f, 0f) * forward;
-
+        
         Gizmos.DrawLine(point, point + left);
         Gizmos.DrawLine(point, point + right);
     }
-    // È­»ìÇ¥ ±×¸² Å¸ÀÔ¿¡ µû¶ó È­»ìÇ¥ °¹¼ö¸¦ ¾ò¾î¿À°Ú½À´Ï´Ù. 
-    private static int GetArrowCount(Vector3 pointA, Vector3 pointB, TrafficHeadquarter headquarter)
+    //í™”ì‚´í‘œ ê·¸ë¦¼ íƒ€ì…ì— ë”°ë¼ í™”ì‚´í‘œ ê°¯ìˆ˜ë¥¼ ì–»ì–´ì˜¤ê² ìŠµë‹ˆë‹¤.
+    private static int GetArrowCount(Vector3 pointA, Vector3 pointB, 
+        TrafficHeadquarter headquarter)
     {
         switch (headquarter.arrowDrawType)
         {
             case TrafficHeadquarter.ArrowDraw.FixedCount:
                 return headquarter.arrowCount;
-    
+               
             case TrafficHeadquarter.ArrowDraw.ByLength:
                 int count = (int)(Vector3.Distance(pointA, pointB) / headquarter.arrowDistance);
                 return Mathf.Max(1, count);
@@ -32,22 +33,22 @@ public static class TrafficHQEditorGizmo
             case TrafficHeadquarter.ArrowDraw.Off:
                 return 0;
             default:
-                throw new ArrayTypeMismatchException();
+                throw new ArgumentOutOfRangeException();
         }
     }
-    // ¼±ÅÃµÇ¾úÀ»¶§³ª ¼±ÅÃµÇÁö ¾Ê¾ÒÀ»¶§µµ È°¼ºÈ­ »óÅÂ¶ó¸é ±âÁî¸ğ¸¦ ±×¸³´Ï´Ù. 
+    //ì„ íƒë˜ì—ˆì„ë•Œë‚˜ ì„ íƒë˜ì§€ ì•Šì•˜ì„ë•Œë„ í™œì„±í™” ìƒíƒœë¼ë©´ ê¸°ì¦ˆëª¨ë¥¼ ê·¸ë¦½ë‹ˆë‹¤.
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Active)]
     private static void DrawGizmo(TrafficHeadquarter headquarter, GizmoType gizmoType)
     {
-        //±âÁî¸ğ¸¦ ¾È±×·Á¾ß ÇÑ´Ù¸é ¸®ÅÏ.
+        //ê¸°ì¦ˆëª¨ë¥¼ ì•ˆê·¸ë ¤ì•¼í•œë‹¤ë©´ ë¦¬í„´.
         if (headquarter.hideGizmos)
         {
-            return;
+            return;;
         }
 
         foreach (TrafficSegment segment in headquarter.segments)
         {
-            // ¼¼±×¸ÕÆ® ÀÌ¸§ Ãâ·Â (ex. segment-0)
+            //ì„¸ê·¸ë¨¼íŠ¸ ì´ë¦„ ì¶œë ¥ (ex. Segment-0).ë¹¨ê°„ìƒ‰.
             GUIStyle style = new GUIStyle
             {
                 normal =
@@ -57,42 +58,43 @@ public static class TrafficHQEditorGizmo
                 fontSize = 15
             };
             Handles.Label(segment.transform.position, segment.name, style);
-            // ¿şÀÌÆ÷ÀÎÆ® ±×¸®±â.
+            //ì›¨ì´í¬ì¸íŠ¸ ê·¸ë¦¬ê¸°.
             for (int j = 0; j < segment.Waypoints.Count; j++)
             {
-                // ÇöÀç ¿şÀÌÆ÷ÀÎÆ® À§Ä¡ Ã£°í. 
+                //í˜„ì¬ ì›¨ì´í¬ì¸íŠ¸ ìœ„ì¹˜ ì°¾ê³ ,
                 Vector3 pos = segment.Waypoints[j].GetVisualPos();
-                // ±¸ ±×¸®°í, ¹æÇâÀ» Ç¥½ÃÇÏ·Á¸é »ö»óÀ¸·Î º¯°æ.
-                Gizmos.color = new Color(0, 0, ((j + 1) / (float)segment.Waypoints.Count), 1f);
+                //êµ¬ ê·¸ë¦¬ê³ , ë°©í–¥ì„ í‘œì‹œí•˜ë ¤ë©´ ìƒ‰ìƒì„ ë³€ê²½.
+                Gizmos.color = new Color(0, 0, ((j + 1) / (float)segment.Waypoints.Count),
+                    1f);
                 Gizmos.DrawSphere(pos, headquarter.waypointSize);
-                //´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ® À§Ä¡ Ã£°í,
+                //ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ ìœ„ì¹˜ ì°¾ê³ ,
                 Vector3 pNext = Vector3.zero;
-                //´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®°¡ Á¸ÀçÇÏ¸é °¡Á®¿À°í.
-                if(j < segment.Waypoints.Count -1 && segment.Waypoints[j + 1 ] !=null)
+                //ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ê°€ ì¡´ì¬í•˜ë©´ ê°€ì ¸ì˜¤ê³ .
+                if (j < segment.Waypoints.Count - 1 && segment.Waypoints[j + 1] != null)
                 {
-                    pNext = segment.Waypoints[j+1].GetVisualPos();
+                    pNext = segment.Waypoints[j + 1].GetVisualPos();
                 }
-                //´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®°¡ ÀÌµû¸é
-                if(pNext != Vector3.zero)
-                {   //ÇöÀç ¿şÀÌÆ÷ÀÎÆ®¸¦ Ãß°¡ÁßÀÎ ¼¼±×¸ÕÆ®¶ó¸é, ÁÖÈ²»ö.
-                    if(segment == headquarter.curSegment)
+                //ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ê°€ ìˆë‹¤ë©´
+                if (pNext != Vector3.zero)
+                {   //í˜„ì¬ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ì¶”ê°€ì¤‘ì¸ ì„¸ê·¸ë¨¼íŠ¸ë¼ë©´, ì£¼í™©ìƒ‰.
+                    if (segment == headquarter.curSegment)
                     {
                         Gizmos.color = new Color(1f, 0.3f, 0.1f);
                     }
                     else
-                    {//±×³É ¿şÀÌÆ÷ÀÎÆ®¶ó¸é »¡°£»ö.
+                    {   //ê·¸ëƒ¥ ì›¨ì´í¬ì¸íŠ¸ë¼ë©´ ë¹¨ê°„ìƒ‰.
                         Gizmos.color = new Color(1f, 0f, 0f);
                     }
-                    //¼±ÅÃÇÑ ±¸°£Àº ³ì»öÀ¸·Î ±×¸±°Ô¿ä, ±¸º°ÇÏ±â ½±°Ô.
-                    if(Selection.activeObject == segment.gameObject)
+                    //ì„ íƒí•œ êµ¬ê°„ì€ ë…¹ìƒ‰ìœ¼ë¡œ ê·¸ë¦´ê»˜ìš”, êµ¬ë³„í•˜ê¸° ì‰½ê²Œ.
+                    if (Selection.activeObject == segment.gameObject)
                     {
                         Gizmos.color = Color.green;
                     }
-                    //µÎ ¿şÀÌÆ÷ÀÎÆ®ÀÇ ¿¬°á¼± ±×¸®±â.
+                    //ë‘ ì›¨ì´í¬ì¸íŠ¸ì˜ ì—°ê²°ì„  ê·¸ë¦¬ê¸°.
                     Gizmos.DrawLine(pos, pNext);
-                    //arrowDrawTypeÀ» ±â¹İÀ¸·Î È­»ìÇ¥ ±×¸± °¹¼ö¸¦ ¾ò¾î¿Í¼­.
+                    //arrowDrawTypeì„ ê¸°ë°˜ìœ¼ë¡œ í™”ì‚´í‘œ ê·¸ë¦´ ê°¯ìˆ˜ë¥¼ ì–»ì–´ì™€ì„œ.
                     int arrowDrawCount = GetArrowCount(pos, pNext, headquarter);
-                    //È­»ìÇ¥¸¦ ±×·ÁÁÖÀÚ
+                    //í™”ì‚´í‘œë¥¼ ê·¸ë ¤ì£¼ì.
                     for (int i = 1; i < arrowDrawCount + 1; i++)
                     {
                         Vector3 point = Vector3.Lerp(pos, pNext,
@@ -101,21 +103,23 @@ public static class TrafficHQEditorGizmo
                     }
                 }
             }
-            //¼¼±×¸ÕÆ®¸¦ ¿¬°áÇÏ´Â ¼± ±×¸®±â.
-            foreach(TrafficSegment nextSegment in segment.nextSegments)
+            //ì„¸ê·¸ë¨¼íŠ¸ë¥¼ ì—°ê²°í•˜ëŠ” ì„  ê·¸ë¦¬ê¸°.
+            foreach (TrafficSegment nextSegment in segment.nextSegments)
             {
-                Vector3 p1 = segment.Waypoints.Last().GetVisualPos();
-                Vector3 p2 = nextSegment.Waypoints.First().GetVisualPos();
-                //³ë¶õ»ö ¼±À¸·Î ±×·ÁÁİ´Ï´Ù.
-                Gizmos.color = new Color(1f, 1f, 0f);
-                Gizmos.DrawLine(p1, p2);
-                if(headquarter.arrowDrawType != TrafficHeadquarter.ArrowDraw.Off)
+                if (nextSegment != null)
                 {
-                    DrawArrow((p1 + p2) / 2f, p1 - p2, headquarter.arrowSizeIntersection);
+                    Vector3 p1 = segment.Waypoints.Last().GetVisualPos();
+                    Vector3 p2 = nextSegment.Waypoints.First().GetVisualPos();
+                    //ë…¸ë€ìƒ‰ ì„ ìœ¼ë¡œ ê·¸ë ¤ì¤ë‹ˆë‹¤.
+                    Gizmos.color = new Color(1f, 1f, 0f);
+                    Gizmos.DrawLine(p1,p2);
+                    if (headquarter.arrowDrawType != TrafficHeadquarter.ArrowDraw.Off)
+                    {
+                        DrawArrow((p1+p2)/2f, p1 - p2, headquarter.arrowSizeIntersection);
+                    }
                 }
             }
         }
-
-
+        
     }
 }
