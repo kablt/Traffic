@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Networking;
 using System.Reflection;
+using UnityEngine.Analytics;
 
 public class SpreadSheetLoader : MonoBehaviour
 {
@@ -41,6 +42,69 @@ public class SpreadSheetLoader : MonoBehaviour
         return loadString;
     }
 
+    T GetData<T>(string[] datas, string childType = "")
+    {
+        object data;
+        if (string.IsNullOrEmpty(childType) || Type.GetType(childType) == null)
+        {
+            data = Activator.CreateInstance(typeof(T));
+        }
+        else
+        {
+            data = Activator.CreateInstance(Type.GetType(childType));
+        }
 
+        FieldInfo[] fieldInfos = typeof(T).GetFields(BindingFlags.Public |
+                                                    BindingFlags.NonPublic |
+                                                    BindingFlags.Instance);
+        for(int i = 0; i< datas.Length; i++)
+        {
+            try 
+            {
+                Type type = fieldInfos[i].FieldType;
+                if (string.IsNullOrEmpty(datas[i]))
+                {
+                    continue;
+                }
+
+                if(type == typeof(int))
+                {
+                    fieldInfos[i].SetValue(data, int.Parse(datas[i]));
+                }
+                else if(type == typeof(float))
+                {
+                    fieldInfos[i].SetValue(data, float.Parse(datas[i]));
+                }
+                else if(type == typeof(bool))
+                {
+                    fieldInfos[i].SetValue(data, bool.Parse(datas[i]));
+                }
+                else if(type == typeof(string))
+                {
+                    fieldInfos[i].SetValue(data, datas[i]);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SpreadSheet Load Error : {e.Message}");
+            }
+
+        }
+        return (T)data;
+
+        List<T> GetDatas<T>(string data)
+        {
+            List<T> returnList = new List<T>();
+            string[] splitedData = data.Split('\n');
+            foreach(string element in splitedData)
+            {
+                string[] datas = element.Split('\t');
+                returnList.Add(GetData<T>(datas));
+            }
+            return returnList;
+        }
+
+    }
 
 }

@@ -1,7 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class TrafficHeadquarter : MonoBehaviour
@@ -19,7 +20,7 @@ public class TrafficHeadquarter : MonoBehaviour
     public const string VehicleTagLayer = "AutonomousVehicle";//무인자동차.
     //교차로들.
     public List<TrafficIntersection> intersections = new List<TrafficIntersection>();
-    
+
     //에디터용, 기즈모 속성들. 본부에서 조절하겠습니다.
     public enum ArrowDraw
     {
@@ -34,10 +35,10 @@ public class TrafficHeadquarter : MonoBehaviour
     public float arrowDistance = 5f;
     public float arrowSizeWaypoint = 1;
     public float arrowSizeIntersection = 0.5f;
-    
-    
-    
-    
+
+
+
+
 
     public List<TrafficWaypoint> GetAllWaypoints()
     {
@@ -49,8 +50,9 @@ public class TrafficHeadquarter : MonoBehaviour
 
         return waypoints;
     }
-    
+
     //data Loading -> 속성들 정의.
+    [Serializable]
     public class EmergencyData
     {
         public int ID = -1;
@@ -79,6 +81,7 @@ public class TrafficHeadquarter : MonoBehaviour
         dataLoader = GetComponentInChildren<SpreadSheetLoader>();
         stateLabel = GameObject.FindWithTag("TrafficLabel").GetComponent<TMPro.TextMeshProUGUI>();
         //일정 주기로 데이터 로딩을 시킬껀데, 주의 너무 자주 빈번하게 부르면 URL 막힙니다
+        InvokeRepeating("CallLoaderAndCheck", 5f, 5f);
     }
 
     private void CallLoaderAndCheck()
@@ -91,6 +94,7 @@ public class TrafficHeadquarter : MonoBehaviour
         }
         //data -> class 담을게요
         trafficData = new TrafficData();
+
         string[] AllRow = loadedData.Split('\n');
         foreach(string oneRow in AllRow)
         {
@@ -98,6 +102,27 @@ public class TrafficHeadquarter : MonoBehaviour
             EmergencyData data = new EmergencyData(datas[0], datas[1]);
             trafficData.datas.Add(data);
         }
+        
+        //data 검사도 합니다. 응급상황 발생시 세팅.
+        CheckData();
     }
 
+    private void CheckData()
+    {
+        for (int i = 0; i < trafficData.datas.Count; i++)
+        {
+            EmergencyData data = trafficData.datas[i];
+            if (intersections.Count <= i || intersections[i]==null)
+            {
+                return;
+            }
+
+            if(data.IsEmergency)
+            {
+                intersections[data.ID].IntersectionType = IntersectionType.EMERGENCY;
+            }
+        }
+    }
+
+    
 }
