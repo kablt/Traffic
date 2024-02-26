@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public enum IntersectionType
 {
@@ -11,6 +12,7 @@ public enum IntersectionType
     TRAFFIC_SLOW,//감속 구간.
     EMERGENCY, //긴급 상황.
 }
+
 
 public class TrafficIntersection : MonoBehaviour
 {
